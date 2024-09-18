@@ -13,7 +13,7 @@
         :name="index.toString()"
       >
         <template #title>
-					{{ title }}-{{ index.toString() }}
+					{{ title }}-{{ (index + 1).toString() }}
 					<div v-if="showAdd" class="add-icon-box" @click.stop="addPanelChild(panel)">
 						<el-icon><Plus /></el-icon>
 					</div>
@@ -93,7 +93,7 @@ const emits = defineEmits<{
 //   input1: string;
 //   select1: string;
 // }
-const handleDelete = (index) => {
+const handleDelete = (index: number) => {
 	emits('delete-panel', index, props.panels)
 }
 // const props = defineProps<{ panels: FirstPanelForm[] }>();

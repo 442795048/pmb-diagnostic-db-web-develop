@@ -9,23 +9,36 @@
 			<LabelValue v-model="formData.studyTitle" label="Study title" :isEdit="isEditMode" @handleEdit="handleEdit" />
 		</div>
 		<div class="basic-form" :class="{ isMoreForm: isExpand }">
-			<LabelValue v-model="formData.franchiseName" label="Franchise Name" :isEdit="isEditMode"
-				@handleEdit="handleEdit" />
+			<LabelValue
+				v-model="formData.franchiseName" label="Franchise Name" :isEdit="isEditMode" @handleEdit="handleEdit"
+			/>
 			<LabelValue v-model="formData.drugName" label="Drug Name" :isEdit="isEditMode" @handleEdit="handleEdit" />
-			<LabelValue v-show="isExpand" v-model="formData.studyPhase" label="Study phase" form-type="select" :options="phaseOptions"
-				:isEdit="isEditMode" @handleEdit="handleEdit" />
-			<LabelValue v-show="isExpand" v-model="formData.studyTumorType" label="Study tumor type" form-type="select"
-				:options="tumorTypeOptions" :isEdit="isEditMode" @handleEdit="handleEdit" />
-			<LabelValue v-show="isExpand" v-model="formData.studyIndication" label="Study Indication" form-type="select"
-				:options="indicationOptions" :isEdit="isEditMode" @handleEdit="handleEdit" />
-			<LabelValue v-show="isExpand" v-model="formData.studyLine" label="Study line" form-type="select" :options="lineOptions"
-				:isEdit="isEditMode" @handleEdit="handleEdit" />
-			<LabelValue v-model="formData.mainStudyDesign" label="Main study design" form-type="select"
-				:options="designOptions" :isEdit="isEditMode" @handleEdit="handleEdit" />
+			<LabelValue
+				v-model="formData.mainStudyDesign" label="Main study design"
+				form-type="select" :options="designOptions" :isEdit="isEditMode" @handleEdit="handleEdit"
+			/>
 			<LabelValue v-model="formData.WP" label="WP #" :show-edit="false" />
 			<LabelValue v-model="formData.CDx" label="CDx #" :show-edit="false" />
-			<LabelValue v-model="formData.studyStatus" label="Study Status" form-type="select" :options="statusOptions"
-				:isEdit="isEditMode" @handleEdit="handleEdit" />
+			<LabelValue
+				v-model="formData.studyStatus" label="Study Status"
+				form-type="select" :options="statusOptions" :isEdit="isEditMode" @handleEdit="handleEdit"
+			/>
+			<LabelValue
+				v-show="isExpand" v-model="formData.studyPhase" label="Study phase"
+				form-type="select" :options="phaseOptions" :isEdit="isEditMode" @handleEdit="handleEdit"
+			/>
+			<LabelValue
+				v-show="isExpand" v-model="formData.studyTumorType" label="Study tumor type"
+				form-type="select" :options="tumorTypeOptions" :isEdit="isEditMode" @handleEdit="handleEdit"
+			/>
+			<LabelValue
+				v-show="isExpand" v-model="formData.studyIndication" label="Study Indication"
+				form-type="select" :options="indicationOptions" :isEdit="isEditMode" @handleEdit="handleEdit"
+			/>
+			<LabelValue
+				v-show="isExpand" v-model="formData.studyLine" label="Study line"
+				form-type="select" :options="lineOptions" :isEdit="isEditMode" @handleEdit="handleEdit"
+			/>
 			<div class="isMore" @click="handleMore">{{ isExpand ? 'Less' : 'More' }}</div>
 		</div>
 	</el-form>

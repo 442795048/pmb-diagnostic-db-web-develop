@@ -27,7 +27,7 @@ defineOptions({
 	inheritAttrs: false,
 });
 import { onMounted, ref, defineProps, defineEmits, watch } from "vue";
-const inputRef = ref(null)
+const inputRef = ref<any>(null)
 const isEditMode = ref<Boolean>(false);
 interface Options {
 	label: string;
@@ -47,7 +47,7 @@ const props = defineProps({
 		default: true,
 	},
 	isEdit: {
-		type: Boolean,
+		type: Boolean as any,
 		default: false
 	},
 	formType: {

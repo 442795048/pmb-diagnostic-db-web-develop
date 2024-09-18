@@ -1,3 +1,5 @@
+import { url } from "inspector";
+
 /**
  * Check if an element has a class
  * @param {HTMLElement} ele
@@ -38,4 +40,8 @@ export function removeClass(ele: HTMLElement, cls: string) {
 export function isExternal(path: string) {
   const isExternal = /^(https?:|http?:|mailto:|tel:)/.test(path);
   return isExternal;
+}
+
+export function getImageUrl(path: string) {
+  return new URL(`../assets/${path}`, import.meta.url).href;
 }

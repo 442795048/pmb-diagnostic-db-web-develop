@@ -116,7 +116,7 @@ const checkTreeChange = (data) => {
 		}
 
 		.story-line-tree.common-card {
-			width: 360px;
+			width: auto;
 			padding: 15px 10px;
 			overflow: auto;
 		}
@@ -124,7 +124,7 @@ const checkTreeChange = (data) => {
 
 	.bottom {
 		display: grid;
-		grid-template-columns: 40% 60%;
+		grid-template-columns: 40% calc(60% - 20px);
 		height: 320px;
 		gap: 20px;
 	}

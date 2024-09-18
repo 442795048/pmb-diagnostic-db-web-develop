@@ -1,6 +1,6 @@
 <template>
   <div class="w-full">
-    <CollapseComponent title="Study Level 3" style="font-size: 14px;color: #4a4a4a;" :panels="panelForms"
+    <CollapsePanel title="Study Level 3" style="font-size: 14px;color: #4a4a4a;" :panels="panelForms"
       :showDelete="!disabled" :active-panels="activePanels" @add-panel="addPanelToFirst" @delete-panel="deletePanelToFirst"
       @update-panel="updatePanel">
       <template #panel-widget="{ item, idx }">
@@ -223,7 +223,7 @@
 					</el-form-item>
         </el-form>
       </template>
-    </CollapseComponent>
+    </CollapsePanel>
   </div>
 </template>
 
@@ -232,11 +232,11 @@ defineOptions({
   name: "StudyLevelThree",
   inheritAttrs: false,
   components: {
-    CollapseComponent,
+    CollapsePanel,
   },
 });
 import { ref, defineExpose, watchEffect } from "vue";
-import CollapseComponent from "@/views/study/components/CollapsePanel.vue";
+import CollapsePanel from "@/views/study/components/CollapsePanel.vue";
 import StudyAPI, { StudyTableQuery, StudyList } from "@/api/study";
 
 interface StudyLevelTwoForm { // level 3 表单对象

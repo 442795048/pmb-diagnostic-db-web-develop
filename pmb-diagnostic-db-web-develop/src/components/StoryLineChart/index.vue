@@ -2,11 +2,12 @@
 	<div ref="storyLineChart" class="story-line-chart">
 		<div class="story-line-header">
 			<div class="menu">
-				<el-button :class="{ isActive: isActive == 'Switch' }" @click="handleClickMenu('Switch')">One Year
+				<!-- <el-button :class="{ isActive: isActive == 'Switch' }" @click="handleClickMenu('Switch')">One Year
 				</el-button>
-				<el-button :class="{ isActive: isActive == 'ALL' }" @click="handleClickMenu('ALL')">All Year</el-button>
+				<el-button :class="{ isActive: isActive == 'ALL' }" @click="handleClickMenu('ALL')">All Year</el-button> -->
+				<el-switch v-model="isActive" active-value="ALL" inactive-value="Switch" @change="handleClickMenu"/>
 			</div>
-			<span class="title">{{ title }} Story Line</span>
+			<span class="title">{{ title }}</span>
 			<div class="right-box">
 				<div class="legend-box">
 					<div class="legend" v-for="item in statusColorArr">
@@ -20,7 +21,6 @@
 				</div>
 			</div>
 		</div>
-		<div class="unit">unit: 1 unit = 1 month</div>
 		<div class="chart-layout">
 			<el-icon v-if="isActive == 'Switch'" class="leftbtn" @click="handleScrollLeft">
 				<ArrowLeftBold />
@@ -63,7 +63,7 @@ const props = defineProps({
 		default: ""
 	},
 	chartConfig: {
-		type: Array,
+		type: Array as any,
 		default: () => {
 			return []
 		}
@@ -77,7 +77,7 @@ const props = defineProps({
 		default: false
 	}
 });
-const emits = defineEmits(['handleScreenFull', 'handleClickMenu'])
+const emits = defineEmits(['handleScreenFull', 'handleClickMenu', 'handleScrollRight', 'handleScrollLeft'])
 import { defineExpose } from 'vue'
 const stepConfig = reactive<any>({
 	boxWidth: '',
@@ -95,6 +95,7 @@ const allYear = ref<Array<number>>([])
 const allYearList = ref<Array<Array<Years>>>([]);
 const currentYearList = ref<Array<Array<Years>>>([]);
 const isActive = ref<string>('ALL') // Switch | ALL
+let observer: any;
 
 onMounted(() => {
 	// 查询所有年份
@@ -102,13 +103,26 @@ onMounted(() => {
 		allYear.value.push(thisYear - index)
 	}
 	getMonthsAndYearAll()
-	handleResize()
+	createObserver()
 	window.addEventListener('resize', handleResize);
 });
 
 onUnmounted(() => {
+	if (observer) {
+    observer.disconnect();
+  }
 	window.removeEventListener('resize', handleResize);
 })
+
+const createObserver = () => {
+  observer = new ResizeObserver((entries) => {
+		for (const entry of entries) {
+			handleResize()
+		}
+  });
+ 
+  observer.observe(storyLineChart.value);
+}
 /**
  * 尺寸变化更新图表
  */
@@ -118,12 +132,9 @@ const handleResize = () => {
 /**
  * 切换时间轴类型
  */
-const handleClickMenu = (val: string) => {
-	if (isActive.value !== val) {
-		isActive.value = val
-		emits('handleClickMenu', val)
-		init()
-	}
+const handleClickMenu: any = (val: string) => {
+	emits('handleClickMenu', val)
+	init()
 }
 /**
  * 初始化
@@ -244,15 +255,15 @@ const handleScreenFull = (val: any) => {
 	})
 }
 
-const handleWheel = (event) => {
+const handleWheel = (event: any) => {
 	console.log(event)
   // 阻止滚动事件
   event.preventDefault();
 };
 
-const handleScrollLeft = (isLeft, moveVal) => {
+const handleScrollLeft: any = (isLeft:any, moveVal:any) => {
 	let width = -(storyLineScroll.value.scrollWidth / yearCount)
-	const isMax = typeof isRight == 'boolean' && isRight
+	const isMax = typeof isLeft == 'boolean' && isLeft
 	// 解决多余留白问题
 	scrollCount.value = (scrollCount.value - 1) > 0 ? scrollCount.value - 1 : 1
 	if (scrollCount.value == 1) {
@@ -265,7 +276,7 @@ const handleScrollLeft = (isLeft, moveVal) => {
 	});
 }
 
-const handleScrollRight = (isRight, moveVal) => {
+const handleScrollRight:any = (isRight: any, moveVal: any) => {
 	const left = storyLineScroll.value.scrollLeft
 	const width = storyLineScroll.value.scrollWidth / yearCount
 	let move = Number(left) + Number(width)
@@ -286,7 +297,7 @@ const handleScrollRight = (isRight, moveVal) => {
 		behavior: isMax ? 'auto' : 'smooth' // 平滑滚动
 	});
 }
-const handleLink = (link) => {
+const handleLink = (link: any) => {
 	window.open(link)
 }
 defineExpose({

@@ -10,13 +10,15 @@
 					<div class="dot-item" :class="{ isActive: row.isActive, isTBD: row.isTBD }" :dot-code="row.code" :style="getStyle(row)">
 						<div class="dot-item-desc">
 							<div class="name">{{ row.srotName || row.label }}</div>
-							<div v-if="!row.isTBD" class="date">{{ row.date }}<span v-if="row.isTBD">(TBD)</span></div>
+							<div v-if="row.date && !row.isTBD" class="date">{{ row.date }}</div>
+							<div v-if="row.isTBD">(TBD)</div>
 						</div>
 					</div>
 					<template #content>
 						<div class="tips-content">
 							<div class="name">{{ row.label }}</div>
-							<div v-if="!row.isTBD" class="date">{{ row.date }}<span v-if="row.isTBD">(TBD)</span></div>
+							<div v-if="row.date && !row.isTBD" class="date">{{ row.date }}</div>
+							<div v-if="row.isTBD">(TBD)</div>
 							<div v-if="row.linkName" class="linkname" @click="handleLink(row.linkTo)">{{ row.linkName }}</div>
 							<!-- 提示 -->
 							<div v-if="row.options && row.options.length" class="tips-box">
@@ -244,12 +246,12 @@ const isOverlapping = (startDate1: any, endDate1: any, startDate2: any, endDate2
 	return start1 < end2 && end1 > start2;
 }
 
-const getDescStyle = (el) => {
+const getDescStyle = (el: any) => {
 }
 
 onMounted(() => {
 });
-const handleLink = (link) => {
+const handleLink = (link: any) => {
 	window.open(link)
 }
 </script>

@@ -17,6 +17,11 @@
 			</div>
 		</div> -->
 		<el-table ref="dataTableRef" :data="teamMembers" stripe class="common-table">
+			<el-table-column label="order" prop="" min-width="50">
+				<template #default="scope">
+					{{ scope.$index + 1 }}
+				</template>
+			</el-table-column>
 			<el-table-column label="Staff Name" prop="staffName" />
 			<el-table-column label="Role" prop="role" />
 			<el-table-column label="Active Id" prop="activityId" />

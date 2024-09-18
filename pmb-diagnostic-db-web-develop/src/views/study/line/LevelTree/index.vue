@@ -1,7 +1,11 @@
 <template>
-	<div class="custom-tree-container">
+	<div class="custom-tree-container" :style="{ width: isShowTree ? '360px' : 'auto' }">
+		<div class="tree-icon">
+			<img v-if="isShowTree" :src="getImageUrl('icons/tree-display.svg')" @click="isShowTree = false">
+			<img v-else :src="getImageUrl('icons/tree-show.svg')"  @click="isShowTree = true">
+		</div>
 		<!-- <p>Using scoped slot</p> -->
-		<el-tree ref="elTreeDom" style="max-width: 600px" :data="dataSource" show-checkbox node-key="code" default-expand-all
+		<el-tree v-show="isShowTree" ref="elTreeDom" style="max-width: 600px" :data="dataSource" show-checkbox node-key="code" default-expand-all
 			:expand-on-click-node="false" :default-checked-keys="defaultCheckedKeys" @check-change="checkTreeChange">
 			<template #default="{ node, data }">
 				<span class="custom-tree-node">
@@ -26,6 +30,7 @@
 
 <script lang="ts" setup>
 import { ref, computed, watchEffect } from "vue";
+import { getImageUrl } from '@/utils/index'
 import { MOCK_TREE } from '../../mock/line'
 import LevelOne from './LevelOne.vue'
 import LevelTwo from './LevelTwo.vue'
@@ -51,9 +56,9 @@ interface Tree {
 const defaultCheckedKeys = computed(() => {
 	// 默认选中level1的所有节点
 	const list = dataSource.value || []
-	const level1Data = list.find(fi => fi.type == 'level1')
+	const level1Data: any = list.find(fi => fi.type == 'level1')
 	if (level1Data) {
-		level1Data.children.forEach(item => {
+		level1Data.children.forEach((item: any) => {
 			item.isCheck = true
 		})
 		return [level1Data.code]
@@ -64,7 +69,8 @@ const defaultCheckedKeys = computed(() => {
 const emits = defineEmits(['checkTreeChange']);
 const dataSource = ref<Tree[]>(MOCK_TREE);
 const elTreeDom = ref(null)
-const visible = reactive({
+const isShowTree = ref<boolean>(true)
+const visible = reactive<any>({
 	level1: false,
 	level2: false,
 	level3: false,
@@ -110,7 +116,7 @@ const getViewButton = (node: Node, data: Tree): boolean => {
 /**
  * 点击编辑打开编辑弹窗
  */
-const handleClickEdit = (node, data, disabled) => {
+const handleClickEdit = (node: any, data: any, disabled: any) => {
 	// 查找根节点
 	const parentNode = searchParentNode(node)
 	currentData.title = parentNode.data.label
@@ -123,7 +129,7 @@ const handleClickEdit = (node, data, disabled) => {
 /**
  * 查找根节点
  */
-const searchParentNode = (node) => {
+const searchParentNode = (node: any) => {
 	if (node.level == 1) {
 		return node 
 	} else {
@@ -134,13 +140,12 @@ const searchParentNode = (node) => {
 /**
  * 节点选中
  */
-const checkTreeChange = (data, flag) => {
+const checkTreeChange = (data: any, flag: any) => {
 	if (data) {
 		data.isCheck = flag
 		// TODO
 		const arr = ['activity1', 'activity2', 'activity3', 'activity4']
 		if (arr.includes(data.code)) {
-			console.log(dataSource.value[data.gl.i])
 			dataSource.value[data.gl.i].children[data.gl.j].children[data.gl.k].isCheck = flag
 		}
 	}
@@ -167,7 +172,17 @@ watch(defaultCheckedKeys, (val) => {
 		font-size: 12px;
 		color: #20a6fc;
 	}
-	
+}
+.custom-tree-container {
+	width: 360px;
+	.tree-icon{
+		width: 30px;
+		cursor: pointer;
+		img {
+			width: 30px;
+			height: 30px;
+		}
+	}
 }
 
 </style>

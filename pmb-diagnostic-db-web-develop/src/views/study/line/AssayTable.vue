@@ -2,6 +2,11 @@
 	<div class="assay-table common-card">
 		<div class="title-name">Assay info & testing performance</div>
 		<el-table ref="dataTableRef" v-loading="loading" :data="dataList" stripe class="common-table">
+			<el-table-column label="order" prop="" min-width="50">
+				<template #default="scope">
+					{{ scope.$index + 1 }}
+				</template>
+			</el-table-column>
 			<el-table-column label="Biomarker" prop="name" min-width="100" />
 			<el-table-column label="Partner" prop="name" min-width="100">
 				<template #default="scope">

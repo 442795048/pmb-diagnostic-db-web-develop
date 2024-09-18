@@ -5,9 +5,18 @@
 			
     </el-form> -->
 		<!-- 父级折叠面板 -->
-		<CollapseComponent title="HGR" :showAdd="false" style="font-size: 12px;color: #4a4a4a;" :panels="formData.panelForms"
-			:showDelete="!disabled" :active-panels="activePanels" @add-panel="addPanelToFirst" @delete-panel="deletePanelToFirst"
-			@update-panel="updatePanel" @add-panel-child="addPanelToChild">
+		<CollapseComponent
+			title="HGR"
+			:showAdd="false"
+			style="font-size: 12px;color: #4a4a4a;"
+			:panels="formData.panelForms"
+			:showDelete="!disabled"
+			:active-panels="activePanels"
+			@add-panel="addPanelToFirst"
+			@delete-panel="deletePanelToFirst"
+			@update-panel="updatePanel"
+			@add-panel-child="addPanelToChild"
+		>
 			<template #panel-widget="{ item, idx }">
 				<el-form :model="item" label-position="top" label-width="150" class="filter-form-inline common-form"
 					style="margin-top: 10px;" ref="queryFormRef">
@@ -61,9 +70,7 @@
 					<el-form-item label="HGR approval Link To" prop="studyTitle">
 						<el-input v-model="item.linkTo1" placeholder="Please enter" clearable />
 					</el-form-item>
-				
-					
-			
+							
 					<el-form-item label="HGR comment">
 						<el-input v-model="item.hgrComment" placeholder="Please enter" clearable />
 					</el-form-item>
@@ -71,8 +78,19 @@
 				</el-form>
 
 				<!-- 子级折叠面板 -->
-				<CollapseComponent :showTitle="false" :showAdd="true" :showDelete="!disabled" :title="`Simple-${idx}`" style="font-size: 12px;color: #4a4a4a;" 		:panels="item.panelForms" :active-panels="activePanelsChild" @add-panel="addPanelChild" @delete-panel="deletePanelChild"
-					@update-panel="updatePanel" @add-panel-child="addPanelChild">
+				<CollapseComponent
+					:showTitle="false"
+					:showAdd="true"
+					:showDelete="!disabled"
+					:title="`Sample type-${idx + 1}`"
+					style="font-size: 12px;color: #4a4a4a;"
+					:panels="item.panelForms"
+					:active-panels="activePanelsChild"
+					@add-panel="addPanelChild"
+					@delete-panel="deletePanelChild"
+					@update-panel="updatePanel"
+					@add-panel-child="addPanelChild"
+				>
 					<template #panel-widget="{ row, index }">
 						<el-form :model="row" label-position="top" label-width="150" class="filter-form-inline common-form"
 							style="margin-top: 10px;" ref="queryFormRef">
@@ -142,7 +160,7 @@ import StudyAPI, { StudyTableQuery, StudyList } from "@/api/study";
 import { StudyBasicForm } from "@/api/study";
 const props = defineProps({
 	activeIndex: {
-		type: [String, Number],
+		type: Number,
 		default: ''
 	},
 	highlight: {
@@ -187,21 +205,21 @@ const activePanelsChild = ref<String>("0");
 /**
  * 父级添加面板
  */
-const addPanelToFirst = (panelList) => {
+const addPanelToFirst = (panelList: any) => {
   panelList.unshift({ panelForms: [{}] });
   activePanels.value = "0";
 };
 /**
  * 子级添加面板
  */
-const addPanelChild = (panelList) => {
+const addPanelChild = (panelList: any) => {
 	panelList.unshift({ panelForms: [] });
   activePanelsChild.value = "0";
 }
 /**
  * 父级向子集添加caollapse
  */
-const addPanelToChild = (panelList, panel) => {
+const addPanelToChild = (panelList:any, panel:any) => {
 	console.log(panelList, panel)
 	if (panel.panelForms) {
 		panel.panelForms.unshift({});
@@ -213,7 +231,7 @@ const addPanelToChild = (panelList, panel) => {
 /**
  * 父级删除面板
  */
-const deletePanelToFirst = (index: any, data) => {
+const deletePanelToFirst = (index: any, data:any) => {
   if (data.length < 2) {
     ElMessage.error('至少保留一个面板');
     return
@@ -223,7 +241,7 @@ const deletePanelToFirst = (index: any, data) => {
 /**
  * 子级删除面板
  */
-const deletePanelChild = (index: any, data) => {
+const deletePanelChild = (index: any, data:any) => {
 	if (data.length < 2) {
     ElMessage.error('至少保留一个面板');
     return
