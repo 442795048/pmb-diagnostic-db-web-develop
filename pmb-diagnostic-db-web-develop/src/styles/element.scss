@@ -1,0 +1,35 @@
+.el-input{
+  height: 30px;
+}
+
+.el-button.el-button--default {
+  padding: 0 20px;
+  height: 30px;
+  font-size: 12px;
+  border-radius: 20px;
+  &:hover{
+    background: #20a6fc;
+    color: #fff;
+  }
+}
+
+.el-card__body {
+  --el-card-padding: 30px 50px;
+}
+.el-select .el-select__wrapper{
+	min-height: 30px;
+}
+.el-dialog__header{
+	border-bottom: 1px solid #ccc;
+}
+
+.el-dialog{
+	max-height: 80%;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+	.el-dialog__body{
+		padding: 10px 0;
+		overflow: auto;
+	}
+}

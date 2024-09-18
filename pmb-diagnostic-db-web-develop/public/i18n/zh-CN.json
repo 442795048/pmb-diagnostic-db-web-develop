@@ -1,0 +1,72 @@
+{ 
+  "system": "system",
+  "summary": "summary",
+  "common": {
+    "actions": "Actions",
+    "delete": "Delete",
+    "add": "Add",
+    "edit": "Edit",
+    "export": "Export",
+    "print": "Print",
+    "confirm": "Confirm",
+    "cancel": "Cancel",
+    "save": "Save",
+    "ok": "OK",
+    "submit": "Submit",
+    "loadingText": "loading...",
+    "close": "Close",
+    "yes": "Yes",
+    "continue": "continue",
+    "download": "download",
+    "view": "view",
+    "yesText":"Yes",
+    "no":"No",
+    "unknown":"unknown",
+    "explore": "Explore",
+    "N/A":"N/A"
+  },
+  "Date": {
+    "mode": {
+      "week": "Week",
+      "month": "Month"
+    },
+    "week": {
+      "Sunday": "Sunday",
+      "Monday": "Monday",
+      "Tuesday": "Tuesday",
+      "Wednesday": "Wednesday",
+      "Thursday": "Thursday",
+      "Friday": "Friday",
+      "Saturday": "Saturday",
+      "sundayAbbr": "Sun",
+      "mondayAbbr": "Mon",
+      "tuesdayAbbr": "Tue",
+      "wednesdayAbbr": "Wen",
+      "thursdayAbbr": "Thu",
+      "fridayAbbr": "Fri",
+      "saturdayAbbr": "Sat",
+      "0": "Sunday",
+      "1": "Monday",
+      "2": "Tuesday",
+      "3": "Wednesday",
+      "4": "Thursday",
+      "5": "Friday",
+      "6": "Saturday"
+    }
+  },
+  "allCaps": {
+    "cancel": "CANCEL",
+    "create": "CREATE",
+    "createNew": "CREATE",
+    "save": "SAVE",
+    "view": "VIEW",
+    "enroll": "ENROLL"
+  },
+  "validation": {
+    "required": "Required."
+  },
+  "message": {
+  },
+  "serviceMessage": {
+  }
+}

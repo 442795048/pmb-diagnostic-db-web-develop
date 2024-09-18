@@ -1,0 +1,33 @@
+version: 0.2
+
+phases:
+  install:
+    runtime-versions:
+      nodejs: 20
+  pre_build:
+    commands:
+      - aws ecr get-login-password --region $AWS_DEFAULT_REGION | docker login --username AWS --password-stdin $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com.cn
+  build:
+    commands:
+      - npm config set proxy http://azpzen.astrazeneca.net:9480
+      - npm config set registry https://registry.npmjs.org
+      - npm config set https-proxy http://azpzen.astrazeneca.net:9480
+      - npm config set strict-ssl false
+      - set HTTPS_PROXY=http://azpzen.astrazeneca.net:9480
+      - set HTTP_PROXY=http://azpzen.astrazeneca.net:9480
+      - export HTTPS_PROXY=http://azpzen.astrazeneca.net:9480
+      - export HTTP_PROXY=http://azpzen.astrazeneca.net:9480
+      - node -v
+      - npm -v
+      - npm i --registry https://registry.npmjs.org  --proxy http://azpzen.astrazeneca.net:9480
+      - npm run build:dev
+      - cp -f nginx.conf.development nginx.conf
+      - docker build -t $IMAGE_REPO_NAME:$IMAGE_TAG .
+      - docker tag $IMAGE_REPO_NAME:$IMAGE_TAG $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com.cn/$IMAGE_REPO_NAME:$IMAGE_TAG
+  post_build:
+    commands:
+      - echo Build completed on `date`
+      - echo Pushing the Docker image...
+      - docker push $AWS_ACCOUNT_ID.dkr.ecr.$AWS_DEFAULT_REGION.amazonaws.com.cn/$IMAGE_REPO_NAME:$IMAGE_TAG
+artifacts:
+  files: "**/*"
