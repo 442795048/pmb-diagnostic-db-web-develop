@@ -19,7 +19,7 @@
               :count-num="numberOfStudyCloseThisYear" style="flex:1" />
           </div>
          
-          <!-- <div class="image-parent">
+          <!-- <div class="image-parent11">
             <StaticsImages @handleList="handleList" :title="'Planned Dx strategy number in ' + new Date().getFullYear()" :isLink="true" :type="'plannedDxStrategy'"
               :count-num="plannedDxStrategyNumberThisYear" style="flex:1" />
             <StaticsImages @handleList="handleList" :title="'Planned Lab Readiness number in ' + new Date().getFullYear()" :isLink="true" :type="'plannedLabReadiness'"
