@@ -68,9 +68,9 @@ const formData: BasicInformation = reactive({
 // 自定义事件
 const emits = defineEmits(['handleShowSubmit'])
 const showSubmit = ref<Boolean>(false);
-const isEditMode = ref(false);
-const isExpand = ref(false);
-const handleEdit = () => {
+const isEditMode = ref<Boolean>(false);
+const isExpand = ref<Boolean>(false);
+const handleEdit:any = () => {
 	isEditMode.value = true
 	showSubmit.value = true
 	isExpand.value = true
