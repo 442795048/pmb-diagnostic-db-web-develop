@@ -158,7 +158,7 @@
         <el-col :xs="4" :sm="8" :md="8" :lg="8" :xl="8">
           <el-form-item label="HGR initial submission" prop="code">
             <el-date-picker v-model="formData.hgrInitialSubmission" class="date-form-label" width="100%" type="date"
-              placeholder="Pick a date" clearable />
+              placeholder="Pick a date" clearable disabled/>
           </el-form-item>
         </el-col>
         <el-col :xs="4" :sm="8" :md="8" :lg="8" :xl="8">
@@ -175,7 +175,7 @@
         <el-col :xs="4" :sm="8" :md="8" :lg="8" :xl="8">
           <el-form-item label="HGR initial approval" prop="code">
             <el-date-picker v-model="formData.hgrInitialApproval" class="date-form-label" width="100%" type="date"
-              placeholder="Pick a date" clearable />
+              placeholder="Pick a date" clearable disabled />
           </el-form-item>
         </el-col>
 
@@ -285,6 +285,14 @@ const props = defineProps({
   cdxCount: {
     type: [String, Number],
     default: ''
+  },
+  hgrApproveDate: {
+    type: [String, Date],
+    default: ''
+  },
+  hgrSubmissionDate: {
+    type: [String, Date],
+    default: ''
   }
 })
 const emits = defineEmits(['handleStudyName'])
@@ -368,6 +376,12 @@ watchEffect(() => {
   }
   if (props.cdxCount) {
     formData.cdx = props.cdxCount
+  }
+  if(props.hgrSubmissionDate) {
+    formData.hgrInitialSubmission = props.hgrSubmissionDate
+  }
+  if(props.hgrApproveDate) {
+    formData.hgrInitialApproval = props.hgrApproveDate
   }
 })
 </script>

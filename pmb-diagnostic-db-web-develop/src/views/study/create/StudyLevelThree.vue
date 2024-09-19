@@ -343,7 +343,7 @@ const props = defineProps({
 
 
 const panelForms = ref<StudyLevelThreeForm[]>([{}]);
-const activePanels = ref<String>("0");
+const activePanels = ref<String>("1");
 
 const cdxManagedByOptions = ref<OptionType[]>([
   { "value": "PMB global", "label": "PMB global" },

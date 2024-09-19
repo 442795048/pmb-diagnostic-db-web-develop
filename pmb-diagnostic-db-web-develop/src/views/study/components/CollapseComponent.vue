@@ -8,11 +8,8 @@
     <el-collapse v-model="localActivePanel" accordion>
       <el-collapse-item v-for="(panel, index) in panels" :key="index" :name="index.toString()">
         <template #title>
-          {{ title }}-{{ index.toString() }}
+          {{ title }}-{{ (index + 1).toString() }}
           <div class="add-icon-box" @click.stop="addPanelChild(panel)">
-            <el-icon>
-              <Plus />
-            </el-icon>
           </div>
           <el-button style="width: 15px;height: 15px;right: 30px;position: absolute;" icon="Minus" circle
             @click.stop="deletePanelToLevel(index)" />

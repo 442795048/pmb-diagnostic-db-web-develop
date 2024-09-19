@@ -4,13 +4,13 @@
       <el-form class="pa-3">
         <el-row justify="space-between">
           <!-- <StudyBasicForm></StudyBasicForm> -->
-          <StudyLevelOne @handleStudyName="handleStudyName" :cdxCount="cdxCount" :wpCount="wpCount" ref="levelOneRef">
+          <StudyLevelOne @handleStudyName="handleStudyName" :hgrApproveDate="hgrApproveDate" :hgrSubmissionDate="hgrSubmissionDate" :cdxCount="cdxCount" :wpCount="wpCount" ref="levelOneRef">
           </StudyLevelOne>
           <StudyLevelTwoForm :studyName="studyName" @handleCount="handleCount" @handleWps="handleWps" ref="levelTwoRef">
           </StudyLevelTwoForm>
           <StudyLevelThree :studyName="studyName" @handleCount="handleThreeCount" @handleCdx="handleCdx"
             ref="levelThreeRef"></StudyLevelThree>
-          <StudyLevelFour ref="levelFourRef"></StudyLevelFour>
+          <StudyLevelFour @handleHgrSubmissionDate="handleHgrSubmissionDate" @handleHgrApproveDate="handleHgrApproveDate" ref="levelFourRef"></StudyLevelFour>
           <!-- <LevelFour ref="levelFourRef" v-model="visible.level4" :title="currentData.title"
             :disabled="currentData.disabled" :node="currentData.node" :formData="currentData.formData" /> -->
           <StudyLevelFive :wps="wps" :cdx="cdx" ref="levelFiveRef" style="width: 100%;"></StudyLevelFive>
@@ -46,20 +46,8 @@ import StudyAPI, { StudyTableQuery, StudyList } from "@/api/study";
 
 const loading = ref(false);
 
-const currentData = reactive({
-  title: '',
-  disabled: false,
-  node: {},
-  formData: {}
-})
-
-const visible = reactive({
-  level1: false,
-  level2: false,
-  level3: false,
-  level4: false,
-  level6: false
-})
+const hgrSubmissionDate = ref('')
+const hgrApproveDate = ref('')
 
 const wpCount = ref(1)
 const wps = ref([])
@@ -83,7 +71,13 @@ const handleCdx = (val) => {
 const handleStudyName = (val) => {
   studyName.value = val
 }
-
+const handleHgrSubmissionDate = (val) => {
+  debugger
+  hgrSubmissionDate.value = val
+}
+const handleHgrApproveDate = (val) => {
+  hgrApproveDate.value = val
+}
 
 const router = useRouter();
 const levelTwoRef = ref()
@@ -103,8 +97,8 @@ function handleInsert() {
     studyLevel1Unique: levelOneRef.value.getPanalForm(),
     studyLevel2WorkingPackageList: levelTwoRef.value.getPanalForm(),
     studyLevel3HgrList: levelThreeRef.value.getPanalForm(),
-    studyLevel5Cdx: levelFourRef.value.getFormData(),
-    studayLevel5CdxInfo: levelFourRef.value.getPanalForm(),
+    // studyLevel5Cdx: levelFourRef.value.getFormData(),
+    studyLevel5CdxList: levelFourRef.value.getPanalForm(),
     studyLevel6OtherAct: levelFiveRef.value.getPanalForm(),
   }
 

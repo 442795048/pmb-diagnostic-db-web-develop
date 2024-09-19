@@ -291,7 +291,7 @@ const props = defineProps({
 })
 
 const panelForms = ref<StudyLevelTwoForm[]>([{}]);
-const activePanels = ref<String>("0");
+const activePanels = ref<String>("1");
 
 const testingPurposeOptions = ref<OptionType[]>([
   { "value": "Patient selection", "label": "Patient selection" },

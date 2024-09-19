@@ -124,7 +124,7 @@ const props = defineProps({
   }
 })
 const panelForms = ref<any[]>([{}]);
-const activePanels = ref<String>("0");
+const activePanels = ref<String>("1");
 const showSub = ref(false)
 const showSubLevel3 = ref(false)
 
@@ -169,7 +169,7 @@ const deletePanelToFirst = (e: any) => {
 
 }
 const getPanalForm = () => {
-  return panelForms
+  return panelForms.value
 }
 
 const changeLevel = (e: String) => {
