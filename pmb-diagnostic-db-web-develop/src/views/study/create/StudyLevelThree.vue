@@ -419,8 +419,6 @@ const deletePanelToFirst = (e: any) => {
 }
 
 const onInputChange = (event: Event, extraParam: number) => {
-  console.log('输入值改变了:', event.target?.value);
-  console.log('额外参数:', extraParam);
   StudyAPI.getAssayById({ assayId: event.target?.value })
     .then((data) => {
       if (data != null && data.assayName != null && data.assayName != '') {

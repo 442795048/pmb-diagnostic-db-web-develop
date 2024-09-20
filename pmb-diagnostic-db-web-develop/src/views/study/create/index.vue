@@ -102,16 +102,32 @@ function handleInsert() {
     studyLevel6OtherAct: levelFiveRef.value.getPanalForm(),
   }
 
+  let error = 'Please enter'
   if(levelOneRef.value.getPanalForm().franchiseName == undefined ||levelOneRef.value.getPanalForm().franchiseName == '' || levelOneRef.value.getPanalForm().franchiseName == null ) {
-    ElMessage.error('Please enter franchiseName');
-  } else if(levelOneRef.value.getPanalForm().drugName == undefined ||levelOneRef.value.getPanalForm().drugName == '' || levelOneRef.value.getPanalForm().drugName == null ) {
-    ElMessage.error('Please enter drugName');
-  } else if(levelOneRef.value.getPanalForm().studyName == undefined ||levelOneRef.value.getPanalForm().studyName == '' || levelOneRef.value.getPanalForm().studyName == null ) {
-    ElMessage.error('Please enter studyName');
+    // ElMessage.error('Please enter franchiseName');
+    error = error + ' franchiseName'
+  } 
+  if(levelOneRef.value.getPanalForm().drugName == undefined ||levelOneRef.value.getPanalForm().drugName == '' || levelOneRef.value.getPanalForm().drugName == null ) {
+    // ElMessage.error('Please enter drugName');
+     error = error + ' drugName'
+  } 
+  
+  if(levelOneRef.value.getPanalForm().studyName == undefined ||levelOneRef.value.getPanalForm().studyName == '' || levelOneRef.value.getPanalForm().studyName == null ) {
+    // ElMessage.error('Please enter studyName');
+    error = error + ' studyName'
+  }
+
+  if(error != 'Please enter') {
+    ElMessage.error(error);
   } else {
     StudyAPI.add(insertParams)
     .then((data) => {
-      ElMessage.success('save success');
+      if(data) {
+        ElMessage.success('save success');
+      } else {
+        ElMessage.error('study name repeat');
+      }
+      
     })
     .finally(() => {
       loading.value = false;
