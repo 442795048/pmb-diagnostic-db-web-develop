@@ -72,7 +72,6 @@ const handleStudyName = (val) => {
   studyName.value = val
 }
 const handleHgrSubmissionDate = (val) => {
-  debugger
   hgrSubmissionDate.value = val
 }
 const handleHgrApproveDate = (val) => {
