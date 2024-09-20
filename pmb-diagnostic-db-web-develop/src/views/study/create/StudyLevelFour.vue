@@ -119,7 +119,7 @@
 
                 <el-col :span="6">
                   <el-form-item label="Sample Specifiction">
-                    <el-input v-model="row.sampleSpecifiction" placeholder="Please enter" clearable />
+                    <el-input v-model="row.sampleSpecification" placeholder="Please enter" clearable />
                   </el-form-item>
                 </el-col>
                 <el-col :span="6">
