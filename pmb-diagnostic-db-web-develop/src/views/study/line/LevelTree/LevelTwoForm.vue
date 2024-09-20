@@ -234,6 +234,7 @@ const initFormData = () => {
 	assayList.forEach((item: any) => {
 		panelForms.value.push(item)
 	})
+	console.log(props.activeIndex)
 	activePanels.value = props.activeIndex || '0'
 }
 

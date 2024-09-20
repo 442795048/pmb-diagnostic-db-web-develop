@@ -182,6 +182,7 @@ const initTree = () => {
 				}
 			})
 		}
+		console.log(treeData.value)
 	})
 }
 
@@ -220,12 +221,12 @@ const getAssayTreeRow = (data:Array<any>, level: number, color: string) => {
 	return {
 		treeLevel: level,
 		btns: ['edit'],
-		children: (data || []).map(item => {
-			const children = (item.datas || []).map((child: any, index: number) => {
+		children: (data || []).map((item: any, index: number) => {
+			const children = (item.datas || []).map((child: any) => {
 				return {
 					...child,
 					label: child.name,
-					sortName: sortNameConfig[item.name] || item.name,
+					sortName: sortNameConfig[child.name] || child.name,
 					code: `${child.name}_${getRandomKey()}`,
 					isCheck: false,
 					treeLevel: level,
@@ -233,9 +234,9 @@ const getAssayTreeRow = (data:Array<any>, level: number, color: string) => {
 					isTBD: !child.startDate,
 					date: child.startDate,
 					color,
-					options: getTipsOptions(item.sampleList),
+					options: getTipsOptions(child.sampleList),
 					activeIndex: index,
-					status: item.eventStatus,
+					status: child.eventStatus,
 					btns: ['edit']
 				}
 			})

@@ -9,7 +9,7 @@
 				<el-tooltip popper-class="strory-chart-tips" placement="bottom" effect="light" :append-to="storyChartDom">
 					<div class="dot-item" :class="{ isActive: row.isActive, isTBD: row.isTBD }" :dot-code="row.code" :style="getStyle(row)">
 						<div class="dot-item-desc">
-							<div class="name">{{ row.srotName || row.label }}</div>
+							<div class="name">{{ row.sortName || row.label }}</div>
 							<div v-if="row.date && !row.isTBD" class="date">{{ row.date }}</div>
 							<div v-if="row.isTBD">(TBD)</div>
 						</div>
