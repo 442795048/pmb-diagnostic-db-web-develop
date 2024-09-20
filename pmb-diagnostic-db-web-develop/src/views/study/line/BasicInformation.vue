@@ -111,7 +111,9 @@ const SubmitStudy = () => {
 		ElMessage.success('save success');
 		emits('handleShowSubmit', false)
 		emits('updateFormData', formData)
-		refreshAppMain()
+		setTimeout(() => {
+			refreshAppMain()
+		}, 1000)
 		router.push({ query: { studyName: formData.studyName } });
 	})
 };
