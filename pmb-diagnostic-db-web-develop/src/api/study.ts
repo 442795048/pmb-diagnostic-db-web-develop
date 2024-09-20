@@ -99,6 +99,64 @@ class StudyAPI {
     });
   }
 
+	/**
+   * 获取view study
+   */
+	static viewStudy(studyName: string) {
+		return request({
+			url: `${USER_BASE_URL}/getTreeInfo`,
+			method: "get",
+			params: { studyName }
+		});
+	}
+
+	/**
+   * 获取树的列表详情
+   */
+	static getTreeDetailInfo(params: any) {
+		return request({
+			url: `${USER_BASE_URL}/getTreeDetailInfo`,
+			method: "get",
+			params
+		});
+	}
+	/**
+   * 保存树详情
+   */
+	static addTreeData(data: any) {
+		return request({
+      url: `${USER_BASE_URL}/addTreeData`,
+      method: "post",
+      data: data,
+    });
+	}
+	/**
+   * 查看view页面表单
+   */
+	static getStudyByName(params: any) {
+		return request({
+			url: `${USER_BASE_URL}/getStudyByName`,
+			method: "get",
+			params
+		});
+	}
+	/**
+   * 修改view页面表单
+   */
+	static updateStudyByName(data: any) {
+		return request({
+			url: `${USER_BASE_URL}/updateStudyByName`,
+			method: "post",
+			data: data,
+		});
+	}
+	static getTestingPerformance(params: any) {
+		return request({
+			url: `${USER_BASE_URL}/getTestingPerformance`,
+			method: "get",
+			params
+		});
+	}
 }
 export default StudyAPI;
 

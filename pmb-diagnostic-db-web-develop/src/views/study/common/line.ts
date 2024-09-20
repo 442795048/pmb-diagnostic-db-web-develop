@@ -39,3 +39,62 @@ export const statusOptions = [
   { label: 'close out', value: 'closeOut' },
   { label: 'Approved', value: 'Approved' },
 ]
+
+export const treeLevelConfig = {
+	level1: {
+		code: 'Study Level 1 (unique)',
+		label: 'Study Level 1 (unique)'
+	},
+	level2: {
+		code: 'Study Level 2 (CTA)',
+				label: 'Study Level 2 (CTA)'
+	},
+	level3: {
+		code: 'Study Level 3 (CDx)',
+		label: 'Study Level 3 (CDx)'
+	},
+	level4: {
+		code: 'Study Level 4 (HGR)',
+		label: 'Study Level 4 (HGR)'
+	},
+	level5: {
+		code: 'Study Level 5 (Issue log)',
+		label: 'Study Level 5 (Issue log)'
+	},
+	level6: {
+		code: 'Study Level 6 (Other events)',
+		label: 'Study Level 6 (Other events)'
+	}
+}
+
+export const sortNameConfig:any = {
+	'Pre-PH3ID': 'PH3ID',
+	'LSPC': 'LSPC',
+	'CSP Available': 'CSP',
+	'HGR initial submission': 'HGR submission',
+	'HGR initial approval': 'HGR approval',
+	'FSI': 'FSI',
+	'LSI': 'LSI',
+	'NDA-S': 'NDA-S',
+	'NDA-A': 'NDA-A',
+	'Assay selection': 'Assay selection',
+	'Lab selection': 'Lab selection',
+	'Lab readiness': 'Lab readiness',
+	'FST': 'FST',
+	'LST': 'LST',
+	'Data Recon Completion': 'Data Recon',
+	'DCO': 'DCO',
+	'DBL': 'DBL',
+	'CDx Assay selection date': 'CDx Assay',
+	'CDx Contract date': 'CDx Contract',
+	'AV completion date': 'AV',
+	'Type testing completion date': 'Type',
+	'CDx HGR Approval Date': 'CDx HGR',
+	'Ring study & Reader precision date': 'Ring & Reader',
+	'Clinical IVD trial completion date': 'Clinical',
+	'CDx Lab readiness date': 'CDx Lab',
+	'Bridging study initiation date': 'Bridging initiation',
+	'Bridging study completion date': 'Bridging completion',
+	'CDx submission date': 'CDx submission',
+	'CDx approval date':  'CDx approval'
+}

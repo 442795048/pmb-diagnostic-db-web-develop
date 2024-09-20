@@ -1,8 +1,11 @@
 <template>
   <div class="w-full">
-    <div v-if="showTitle" class="py-1">
+    <div v-if="showTitle" class="w-full-title py-1">
       {{ title }}
-      <el-button class="add-icon" icon="Plus" circle @click="addPanelToLevel" />
+      <!-- <el-button class="add-icon" icon="Plus" circle @click="addPanelToLevel" /> -->
+			<div v-if="showTitleBtn" class="add-icon-box" @click="addPanelToLevel">
+				<el-icon><Plus /></el-icon>
+			</div>
     </div>
 
 		<!-- +新增校验 -->
@@ -14,10 +17,10 @@
       >
         <template #title>
 					{{ title }}-{{ (index + 1).toString() }}
-					<div v-if="showAdd" class="add-icon-box" @click.stop="addPanelChild(panel)">
+					<div v-if="getShowAddBtn(panel, index)" class="add-icon-box" @click.stop="addPanelChild(panel)">
 						<el-icon><Plus /></el-icon>
 					</div>
-					<div v-if="showDelete" class="delete-icon-box" @click.stop="handleDelete(index)">
+					<div v-if="getShowDeleteBtn(panel, index)" class="delete-icon-box" @click.stop="handleDelete(index)">
 						<el-icon><Minus /></el-icon>
 					</div>
 				</template>
@@ -44,7 +47,7 @@
 </template>
 
 <script lang="ts" setup>
-import { defineProps, ref, watch, defineEmits, computed } from "vue";
+import { defineProps, ref, watch, defineEmits, computed, watchEffect } from "vue";
 defineOptions({
   name: "CollapseComponent",
   inheritAttrs: false,
@@ -55,10 +58,12 @@ const props = defineProps({
     type: String,
     default: "",
   },
-  panels: <any>[],
-	
+  panels: {
+    type: Array as any,
+    default: "",
+  },
   activePanels: {
-    type: String,
+    type: String as any,
     default: "",
   },
 	// +新增参数
@@ -66,23 +71,35 @@ const props = defineProps({
 		type: Boolean,
 		default: true
 	},
-	showDelete: {
+	showTitleBtn: {
 		type: Boolean,
+		default: true
+	},
+	showDelete: {
+		type: [Boolean, Function],
 		default: false
 	},
 	showAdd: {
-		type: Boolean,
+		type: [Boolean, Function],
 		default: false
 	}
 });
 
-const emits = defineEmits<{
-	(e: "add-panel-child"): void;
-	(e: "delete-panel"): void;
-  (e: "add-panel"): void;
-  (e: "update-panel", panel: String): void;
-}>();
+const emits = defineEmits(['add-panel-child', 'delete-panel', 'add-panel', 'update-panel']);
 
+const getShowAddBtn = (panel: any, index: number) => {
+	if(typeof props.showAdd == 'function') {
+		return props.showAdd(panel, index, props.panels)
+	}
+	return props.showAdd
+}
+
+const getShowDeleteBtn = (panel: any, index: number) => {
+	if(typeof props.showDelete == 'function') {
+		return props.showDelete(panel, index, props.panels)
+	}
+	return props.showDelete
+}
 // const localActivePanel = computed({
 //   get: () => props.activePanels,
 //   set: () => {}
@@ -101,11 +118,16 @@ const localActivePanel = ref(props.activePanels);
 watch(localActivePanel, (newVal) => {
   emits("update-panel", newVal);
 })
+watchEffect(() => {
+	if (props.activePanels) {
+		localActivePanel.value = props.activePanels
+  }
+})
 const addPanelToLevel = () => {
   // 暴露给外部 emit 调用
   emits("add-panel", props.panels);
 };
-const addPanelChild = (panel) => {
+const addPanelChild = (panel: any) => {
 	emits("add-panel-child", props.panels, panel);
 }
 </script>
@@ -114,7 +136,12 @@ const addPanelChild = (panel) => {
 .el-form-item {
   margin-bottom: 20px;
 }
+.w-full-title{
+	display: flex;
+	align-items: center;
+}
 .delete-icon-box,.add-icon-box{
+	cursor: pointer;
 	color: #409EFF;
 	margin-left: 10px;
 	border: 1px solid #409EFF;

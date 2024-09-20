@@ -30,20 +30,14 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted } from "vue";
-
-import StudyAPI, { StudyTableQuery, StudyList } from "@/api/study";
+import { ref, onMounted, inject } from "vue";
+import StudyAPI from "@/api/study";
 defineOptions({
 	name: "TeamBoard",
 });
-const props = defineProps({
-	studyName: {
-		type: [String],
-		default: ''
-	}
-});
+const studyName: any = inject('studyName')
 const selectTeams = () =>{
-	StudyAPI.getAllTeams(props.studyName).then((data)=>{
+	StudyAPI.getAllTeams(studyName.value).then((data)=>{
 		teamMembers.value = data.memberList
 		demand.value = data.demand
 		staff.value = data.staff
@@ -51,7 +45,6 @@ const selectTeams = () =>{
 }
 onMounted(() => {
 	selectTeams()
-	console.log('TeamBoard', props.studyName)
 })
 // 假设的团队成员数据
 const teamMembers = ref([

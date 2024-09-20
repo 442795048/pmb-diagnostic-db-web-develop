@@ -2,7 +2,7 @@
 	<div class="assay-table common-card">
 		<div class="title-name">Assay info & testing performance</div>
 		<el-table ref="dataTableRef" v-loading="loading" :data="dataList" stripe class="common-table">
-			<el-table-column label="order" prop="" min-width="50">
+			<el-table-column label="order" prop="" min-width="80">
 				<template #default="scope">
 					{{ scope.$index + 1 }}
 				</template>
@@ -40,25 +40,22 @@ defineOptions({
 	name: "AssayTable",
 	inheritAttrs: false,
 });
-import { ref, reactive, onMounted } from "vue";
-const props = defineProps({
-	studyName: {
-		type: [String, Number],
-		default: ''
-	}
-});
-onMounted(() => {
-	console.log('assaytable', props.studyName)
-})
+import { ref, reactive, onMounted, inject } from "vue";
+import StudyAPI from "@/api/study";
+const studyName: any = inject('studyName')
 const router = useRouter();
-const dataList = reactive([
-	{ name: '测试1' },
-	{ name: '测试2' },
-	{ name: '测试2' },
-	{ name: '测试2' },
-	{ name: '测试2' },
-	{ name: '测试2' }
-])
+const dataList = ref<any>([])
+onMounted(() => {
+	init()
+})
+const init = () =>{
+	const params = {
+		studyName: studyName.value
+	}
+	StudyAPI.getTestingPerformance(params).then((data)=>{
+		dataList.value = data || []
+	})
+}
 const loading = ref(false)
 
 const handleNew = () => {

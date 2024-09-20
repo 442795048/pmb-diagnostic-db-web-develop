@@ -5,11 +5,11 @@
     width="1000"
     :before-close="handleClose"
   >
-		<LevelFourForm v-if="visible" :activeIndex="activeIndex" :disabled="disabled" />
+		<LevelFourForm ref="levelFormRef" :activeIndex="activeIndex" :disabled="disabled" :formData="formData"  />
     <template #footer>
       <div class="dialog-footer">
         <el-button @click="handleClose">Cancel</el-button>
-        <el-button type="primary" @click="handleSave">
+        <el-button type="primary" :loading="loading" @click="handleSave">
           Confirm
         </el-button>
       </div>
@@ -18,23 +18,24 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, inject } from "vue";
 import LevelFourForm from "./LevelFourForm.vue";
+import StudyAPI from "@/api/study";
 const props = defineProps({
 	modelValue: {
     type: Boolean,
   },
-	node: {
-    type: [String, Number],
-		default: ''
-  },
 	title: {
-    type: [String, Number],
+    type: [String, Number] as any,
 		default: ''
   },
 	disabled: {
 		type: Boolean,
 		default: false
+	},
+	activeIndex: {
+		type: [Number, String] as any,
+		default: ''
 	},
 	formData: {
 		type: Object as any,
@@ -43,31 +44,32 @@ const props = defineProps({
 		}
 	}
 });
-const emits = defineEmits(["update:modelValue"]);
-const activeIndex = ref('')
-const Highlight = reactive([])
+const emits = defineEmits(["update:modelValue", "handleClose", "handleAfterSave"]);
+const loading = ref<boolean>(false)
+const levelFormRef = ref<any>(null)
+const studyName: any = inject('studyName')
 const visible = computed(() => {
 	return props.modelValue
 })
 
-watch(props.node, (node) => {
-	if (node.data) {
-		activeIndex.value = node.data.activeIndex
-	}
-},{ deep: true, immediate: true })
-
 const handleSave = () => {
-	visible.value = false
-	emits('update:modelValue', false)
-	ElMessage({
-    message: 'Save Success',
-    type: 'success',
-  })
+	loading.value = true;
+  let insertParams = {
+    studyLevel6OtherAct: levelFormRef.value.getPanalForm(),
+		studyName: studyName.value
+  }
+	StudyAPI.addTreeData(insertParams).then((data) => {
+		ElMessage.success('save success');
+		emits('handleAfterSave')
+		handleClose()
+	}).finally(() => {
+		loading.value = false;
+	});
 }
 
 const handleClose = () => {
-	visible.value = false
 	emits('update:modelValue', false)
+	emits('handleClose')
 }
 </script>
 

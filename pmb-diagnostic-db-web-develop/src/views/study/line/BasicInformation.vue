@@ -51,38 +51,51 @@
 <script setup lang="ts">
 import { BasicInformation } from "../types/line";
 import { phaseOptions, tumorTypeOptions, indicationOptions, lineOptions, designOptions, statusOptions } from "../common/line";
-import { reactive, defineEmits, onMounted, defineProps } from "vue";
+import { reactive, defineEmits, onMounted, inject } from "vue";
 import LabelValue from "../components/LabelValue.vue";
-const props = defineProps({
-	studyName: {
-		type: [String, Number],
-		default: ''
-	}
-});
-onMounted(() => {
-	console.log('BasicInformation', props.studyName)
-})
+import StudyAPI from "@/api/study";
+import { result } from "lodash";
 const router = useRouter();
+const studyName: any = inject('studyName')
 const formData: BasicInformation = reactive({
-	studyName: '124',
-	studyCode: 1232,
-	studyTitle: 'Study',
-	franchiseName: 'xxxx',
-	drugName: 'xxxx',
-	studyPhase: 'PhaseI',
-	studyTumorType: 'BC',
-	studyIndication: 'mCSPC',
-	studyLine: '1L',
-	mainStudyDesign: 'ITT',
-	WP: '1',
-	CDx: '1',
-	studyStatus: 'Planned'
+	oldStudyName: '',
+	studyName: '',
+	studyCode: '',
+	studyTitle: '',
+	franchiseName: '',
+	drugName: '',
+	studyPhase: '',
+	studyTumorType: '',
+	studyIndication: '',
+	studyLine: '',
+	mainStudyDesign: '',
+	WP: '',
+	CDx: '',
+	studyStatus: ''
 })
+
 // 自定义事件
-const emits = defineEmits(['handleShowSubmit'])
+const emits = defineEmits(["handleShowSubmit", "updateFormData"])
 const showSubmit = ref<Boolean>(false);
 const isEditMode = ref<Boolean>(false);
 const isExpand = ref<Boolean>(false);
+
+onMounted(() => {
+	console.log('BasicInformation', studyName.value)
+	init()
+})
+
+const init = () => {
+	const params = {
+		studyName: studyName.value
+	}
+	StudyAPI.getStudyByName(params).then(data => {
+		const result: any = data || {}
+		Object.assign(formData, { ...result, oldStudyName: result.studyName })
+		emits('updateFormData', formData)
+	})
+}
+
 const handleEdit:any = () => {
 	isEditMode.value = true
 	showSubmit.value = true
@@ -91,9 +104,13 @@ const handleEdit:any = () => {
 }
 
 const SubmitStudy = () => {
-	isEditMode.value = false
-	showSubmit.value = false
-	emits('handleShowSubmit', false)
+	const params = formData
+	StudyAPI.updateStudyByName(params).then(data => {
+		isEditMode.value = false
+		showSubmit.value = false
+		emits('handleShowSubmit', false)
+		emits('updateFormData', formData)
+	})
 };
 
 const BackToStudy = () => {
@@ -107,6 +124,7 @@ const handleMore = () => {
 		showSubmit.value = false
 	}
 }
+
 </script>
 
 <style lang="scss" scoped>

@@ -77,7 +77,7 @@ const props = defineProps({
 		default: false
 	}
 });
-const emits = defineEmits(['handleScreenFull', 'handleClickMenu', 'handleScrollRight', 'handleScrollLeft'])
+const emits = defineEmits(['handleScreenFull', 'handleResize', 'handleClickMenu', 'handleScrollRight', 'handleScrollLeft'])
 import { defineExpose } from 'vue'
 const stepConfig = reactive<any>({
 	boxWidth: '',
@@ -301,6 +301,7 @@ const handleLink = (link: any) => {
 	window.open(link)
 }
 defineExpose({
+	handleResize,
 	handleClickMenu,
 	handleScrollRight,
 	handleScrollLeft
@@ -422,9 +423,16 @@ defineExpose({
 		padding-bottom: 20px;
 		overflow: auto;
 		position: relative;
-
+		height: 100%;
+		.story-line-content{
+			height: 100%;
+			overflow: hidden;
+		}
 		&.isAll {
 			overflow: initial;
+			.story-line-content{
+				overflow: initial;
+			}
 		}
 
 		&::-webkit-scrollbar {

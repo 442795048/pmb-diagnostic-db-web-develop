@@ -107,7 +107,7 @@ const horizontal = computed(() => {
 })
 // 点数据展示
 const dotData = computed(() => {
-	const data = props.config.chartData.filter((f: any) => !f.startDate && !f.endDate && !f.hide)
+	const data = props.config.chartData.filter((f: any) => !f.isBar)
 	const dotDate: any = []
 	const tbdData: any = []
 	data.forEach((item: any) => {
@@ -115,33 +115,32 @@ const dotData = computed(() => {
 		if (colorObj) {
 			item.color = colorObj.color
 		}
-		if (item.date && item.date !== 'TBD') {
-			dotDate.push(item)
-		} else {
+		if (item.isTBD) {
 			tbdData.push({ ...item, isTBD: true })
+		} else {
+			dotDate.push(item)
 		}
 	})
 	// TBD 用虚线球表示，并且平分剩余的时间位置
-	// 获取最大时间
-	let maxDateTime = 0
-	let maxDate = ''
-	for (let i = 1; i < dotDate.length; i++) {
-		const currentDateTime = new Date(dotDate[i].date).getTime()
-		if (currentDateTime >= maxDateTime) {
-			maxDateTime = currentDateTime
-			maxDate = dotDate[i].date
-		}
-	}
 	// 截取剩余时间
 	if (tbdData.length) {
 		const yearList = props.stepConfig.dateList || []
+		// 获取最大时间
+		let maxDateTime = new Date(yearList[0]).getTime()
+		let maxDate = yearList[0]
+		for (let i = 0; i < dotDate.length; i++) {
+			const currentDateTime = new Date(dotDate[i].date).getTime()
+			if (currentDateTime >= maxDateTime) {
+				maxDateTime = currentDateTime
+				maxDate = dotDate[i].date
+			}
+		}
 		const startIndex = yearList.findIndex((date: any) => date == maxDate)
 		if (startIndex >= 0) {
 			const yearSliceList = yearList.slice(startIndex, yearList.length - 1)
 			const average = Math.floor(yearSliceList.length / tbdData.length)
 			tbdData.forEach((item: any, index: number) => {
 				item.date = yearSliceList[index * average + Math.floor(average / 2)]
-				item.isTBD = true
 			})
 		}
 	}
@@ -149,7 +148,7 @@ const dotData = computed(() => {
 })
 // 柱数据展示
 const barData = computed(() => {
-	const data = props.config.chartData.filter((f: any) => f.startDate && f.endDate && !f.hide)
+	const data = props.config.chartData.filter((f: any) => f.isBar)
 	// 更新rowNumber判断是否在一行显示
 	const barList = data.map((item: any, index: number) => {
 		let rowNumber = 1

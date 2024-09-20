@@ -1,9 +1,18 @@
 <template>
   <div class="w-full" style="width: 100%;">
-    <CollapseComponent title="HGR" :showAdd="false" style="font-size: 12px;color: #4a4a4a;" :panels="panelForms"
-      :showDelete="!disabled" :active-panels="activePanels" @add-panel="addPanelToFirst"
-      @delete-panel="deletePanelToFirst" @update-panel="updatePanel" @add-panel-child="addPanelToChild">
-
+    <CollapseComponent
+			title="HGR"
+			style="font-size: 12px;color: #4a4a4a;"
+			:panels="panelForms"
+      :showTitleBtn="false"
+			:showDelete="!disabled"
+			:showAdd="getShowAdd"
+			:active-panels="activePanels"
+			@add-panel="addPanelToFirst"
+      @delete-panel="deletePanelToFirst"
+			@update-panel="updatePanel"
+			@add-panel-child="addPanelToFirst"
+		>
       <!-- <CollapseComponent title="HGR" style="font-size: 12px;color: #4a4a4a;" :panels="panelForms"
           :active-panels="activePanels" @add-panel="addPanelToFirst" @delete-panel="deletePanelToFirst"
           @update-panel="updatePanel" @add-panel-child="addPanelToChild"> -->
@@ -86,10 +95,18 @@
           </el-row>
         </el-form>
         <!-- 子级折叠面板 -->
-        <CollapseComponent :showTitle="false" :showAdd="true" :showDelete="!disabled" :title="`Sample type-${idx + 1}`"
-          style="font-size: 12px;color: #4a4a4a;" :panels="item.sampleInfoList" :active-panels="activePanelsChild"
-          @add-panel="addPanelChild" @delete-panel="deletePanelChild" @update-panel="updatePanel"
-          @add-panel-child="addPanelChild">
+        <CollapseComponent
+					:showTitle="false"
+					:showAdd="getShowAdd"
+					:showDelete="!disabled"
+					:title="`Sample type-${idx + 1}`"
+          style="font-size: 12px;color: #4a4a4a;"
+					:panels="item.sampleInfoList"
+					:active-panels="item.activePanels"
+          @add-panel-child="(panelList, panel) => addPanelChild(panelList, panel, item)"
+					@delete-panel="deletePanelChild"
+					@update-panel="updatePanel"
+				>
           <template #panel-widget="{ row, index }">
             <el-form :model="row" label-position="top" label-width="150" class="filter-form-inline"
               style="margin-top: 10px;width: 100%;" ref="queryFormRef">
@@ -187,32 +204,34 @@ const activePanels = ref<String>("1");
 const disabled = ref<Boolean>(false)
 const activePanelsChild = ref<String>("0");
 
-const addPanelToFirst = () => {
-  panelForms.value.push({});
-  // 折叠其他面板
-  activePanels.value = "0";
-};
 const emits = defineEmits(['handleHgrSubmissionDate','handleHgrApproveDate'])
-
 /**
- * 子级添加面板
+ * 判断是否显示add按钮
+ * 同级别只有最后一个显示按钮
  */
-const addPanelChild = (panelList) => {
-  panelList.push({ panelForms: [{}] });
-  activePanelsChild.value = "0";
+const getShowAdd = (panel: any, index: any, panels: any) => {
+	return index == panels.length - 1
 }
 
 /**
- * 父级向子集添加caollapse
+ * 父级添加面板
  */
-const addPanelToChild = (panelList, panel) => {
-  console.log(panelList, panel)
-  if (panel.panelForms) {
-    panel.panelForms.unshift({});
-  } else {
-    panel.panelForms = []
-
-  }
+const addPanelToFirst = (panelList: any) => {
+	panelList.push({ sampleInfoList: [{}] });
+  // 折叠其他面板
+	nextTick(() => {
+		activePanels.value = `${panelForms.value.length - 1}`;
+	})
+};
+/**
+ * 子级添加面板
+ */
+const addPanelChild = (panelList: any, panel: any, parent: any) => {
+	panelList.push({});
+	// 折叠其他面板
+	nextTick(() => {
+		parent.activePanels = `${panelList.length - 1}`;
+	})
 }
 
 /**
