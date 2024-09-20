@@ -20,7 +20,7 @@
 				<div :class="{ 'fixed-header': fixedHeader }">
 					<TagsView v-if="showTagsView" />
 				</div>
-				<AppMain />
+				<AppMain v-if="showAppMain" />
 				<Settings v-if="defaultSettings.showSettings" />
 				<!-- 返回顶部 -->
 				<el-backtop target=".main-container">
@@ -35,7 +35,7 @@
 				<NavBar v-if="layout === LayoutEnum.LEFT" />
 				<TagsView v-if="showTagsView" />
 			</div>
-			<AppMain />
+			<AppMain v-if="showAppMain" />
 			<Settings v-if="defaultSettings.showSettings" />
 			<!-- 返回顶部 -->
 			<el-backtop target=".main-container">
@@ -64,6 +64,14 @@ const showTagsView = computed(() => settingsStore.tagsView); // 是否显示tags
 const layout = computed(() => settingsStore.layout); // 布局模式 left top mix
 const activeTopMenuPath = computed(() => appStore.activeTopMenuPath); // 顶部菜单激活path
 const mixLeftMenus = computed(() => permissionStore.mixLeftMenus); // 混合布局左侧菜单
+const showAppMain = ref(true)
+const refreshAppMain = () => {
+	showAppMain.value = false
+	nextTick(() => {
+		showAppMain.value = true
+	})
+}
+provide('refreshAppMain', refreshAppMain)
 
 watch(
 	() => activeTopMenuPath.value,

@@ -74,7 +74,8 @@ const formData: any = reactive({
 })
 
 // 自定义事件
-const emits = defineEmits(["handleShowSubmit", "updateFormData"])
+const emits = defineEmits(["handleShowSubmit", "updateFormData", "handleRefresh"])
+const refreshAppMain: any = inject('refreshAppMain')
 const showSubmit = ref<Boolean>(false);
 const isEditMode = ref<Boolean>(false);
 const isExpand = ref<Boolean>(false);
@@ -89,7 +90,6 @@ const init = () => {
 		studyName: studyName.value
 	}
 	StudyAPI.getStudyByName(params).then(data => {
-		console.log(data)
 		const result: any = data || {}
 		Object.assign(formData, { ...result, oldStudyName: result.studyName })
 		emits('updateFormData', formData)
@@ -108,8 +108,11 @@ const SubmitStudy = () => {
 	StudyAPI.updateStudyByName(params).then(data => {
 		isEditMode.value = false
 		showSubmit.value = false
+		ElMessage.success('save success');
 		emits('handleShowSubmit', false)
 		emits('updateFormData', formData)
+		refreshAppMain()
+		router.push({ query: { studyName: formData.studyName } });
 	})
 };
 

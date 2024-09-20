@@ -96,11 +96,11 @@
 							</el-form-item>
 						
 							<el-form-item label="Sample number before">
-								<el-input v-model="row.sampleNumberBefore" placeholder="Please enter" clearable />
+								<el-input-number v-model="row.sampleNumberBefore" width="100%" :controls="false" />
 							</el-form-item>
 						
 							<el-form-item label="Sample number after">
-								<el-input v-model="row.sampleNumberAfter" placeholder="Please enter" clearable />
+								<el-input-number v-model="row.sampleNumberAfter" :controls="false" />
 							</el-form-item>
 						
 							<el-form-item label="Data specification for set 1">
@@ -108,11 +108,11 @@
 							</el-form-item>
 						
 							<el-form-item label="Data size before for set 1">
-								<el-input v-model="row.dataSizeBeforeSet1" placeholder="Please enter" clearable />
+								<el-input-number v-model="row.dataSizeBeforeSet1" :controls="false" />
 							</el-form-item>
 						
 							<el-form-item label="Data size after for set 1">
-								<el-input v-model="row.dataSizeAfterSet1" placeholder="Please enter" clearable />
+								<el-input-number v-model="row.dataSizeAfterSet1" :controls="false" />
 							</el-form-item>
 						
 							<el-form-item label="Data specification for set 2">
@@ -120,11 +120,11 @@
 							</el-form-item>
 						
 							<el-form-item label="Data size before for set 2">
-								<el-input v-model="row.dataSizeBeforeSet2" placeholder="Please enter" clearable />
+								<el-input-number v-model="row.dataSizeBeforeSet2" :controls="false" />
 							</el-form-item>
 						
 							<el-form-item label="Data size after for set 2">
-								<el-input v-model="row.dataSizeAfterSet2" placeholder="Please enter" clearable />
+								<el-input-number v-model="row.dataSizeAfterSet2" :controls="false" />
 							</el-form-item>
 						</el-form>
 					</template>

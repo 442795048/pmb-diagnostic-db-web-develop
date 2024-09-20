@@ -205,6 +205,7 @@ const getTreeRow = (data:Array<any>, level: number, color: string, disabled?: an
 				date: item.startDate,
 				disabled,
 				color,
+				options: getTipsOptions(item.sampleList),
 				isGl: item.eventLevel == '2' || item.eventLevel == '3' && item.subEventLevel, // 是否关联其他level
 				status: item.eventStatus,
 				btns: level == 5 ? [] : ['edit'] // leve5不显示
@@ -232,6 +233,7 @@ const getAssayTreeRow = (data:Array<any>, level: number, color: string) => {
 					isTBD: !child.startDate,
 					date: child.startDate,
 					color,
+					options: getTipsOptions(item.sampleList),
 					activeIndex: index,
 					status: item.eventStatus,
 					btns: ['edit']
@@ -248,6 +250,25 @@ const getAssayTreeRow = (data:Array<any>, level: number, color: string) => {
 			}
 		})
 	}
+}
+/**
+ * 获取提示列表
+ */
+const getTipsOptions = (list: any) => {
+	const options = list || []
+	const tipsArr: any = []
+	options.forEach((obj: any, index: number) => {
+		const arr: any = []
+		Object.keys(obj).forEach(key => {
+			tipsArr.push({
+				label: key, value: obj[key] || ''
+			})
+		})
+		if (index !== options.length - 1) {
+			tipsArr.push({ isSplit: true, })
+		}
+	})
+	return tipsArr
 }
 /**
  * 获取随机id

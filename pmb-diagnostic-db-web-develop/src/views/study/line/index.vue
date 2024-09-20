@@ -5,6 +5,7 @@
 			<BasicInformation
 				@handleShowSubmit="(val: any) => { showSubmit = val }"
 				@updateFormData="updateFormData"
+				@handleRefresh="handleRefreshPage"
 			/>
 			<!-- 按钮 -->
 			<div class="template-btn">
@@ -93,30 +94,11 @@ const selectChartData = (data: any) => {
 	})
 }
 
-// const glLevel6ToAssay = (treeData: any) => {
-// 	const studyLevel6 = treeData.find((fi: any) => fi.treeLevel == 6)
-// 	if (studyLevel6) {
-// 		// 查找可关联数据
-// 		const level6Children = studyLevel6.children || []
-// 		level6Children.forEach((item: any) => {
-// 			if (item.eventLevel == '2' || item.eventLevel == '3' && item.isCheck) {
-// 				const eventLevel = Number(item.eventLevel) - 1
-// 				const treeRow = treeData[eventLevel]
-// 				const assay = treeRow.find((fi: any) => fi.label == item.subEventLevel)
-// 				if (assay) {
-// 					// 如果条件满足 删除图标中level6的数据 并在对应level2或level3的泳道中添加
-// 					// 1.查找level2或level3并添加
-// 					const configRow = chartConfig.value.find((f: any) => f.treeLevel == eventLevel)
-// 					if (configRow) {
-// 						// const config
-// 					}
-// 					const config = { assayName: assay.label, chartData: filterChildren }
-// 					chartConfig.value.push(config)
-// 				}
-// 			}
-// 		})
-// 	}
-// }
+/**
+ * 刷新整个页面
+ */
+const handleRefreshPage = () => {
+}
 
 const updateFormData = (data: any) => {
 	basicInfo.value = data
