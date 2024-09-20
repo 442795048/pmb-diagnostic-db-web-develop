@@ -4,12 +4,8 @@
       <el-row :gutter="10">
         <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
           <el-form-item label="Franchise Name" prop="franchiseName">
-            <!-- <el-input v-model="queryParams.franchiseName" placeholder="Please enter" clearable /> -->
-            <!-- <el-autocomplete v-model="queryParams.franchiseName" :fetch-suggestions="querySearch"
-              placeholder="Please select" @select="handleSelect" /> -->
-
             <el-input v-model="queryParams.franchiseName" placeholder="Please enter" @input="filterOptions"
-              @blur="hideDropdown">
+              @blur="hideDropdown" clearable>
             </el-input>
             <ul v-show="showDropdown" class="dropdown-list">
               <li v-for="(option, index) in filteredOptions" :key="index" @click="selectOption(option)">
@@ -30,9 +26,9 @@
               placeholder="Please select" @select="handleSelect" /> -->
 
             <el-input v-model="queryParams.studyName" placeholder="Please enter" @input="filterStudyOptions"
-              @blur="hideDropdown">
+              @blur="hideStudyDropdown" clearable>
             </el-input>
-            <ul v-show="showDropdown" class="dropdown-list">
+            <ul v-show="showStudyDropdown" class="dropdown-list">
               <li v-for="(option, index) in filteredStudyOptions" :key="index" @click="selectStudyOption(option)">
                 {{ option }}
               </li>
@@ -85,18 +81,42 @@
 
         <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
           <el-form-item label="Biomarker">
-            <el-input v-model="queryParams.biomarkerName" placeholder="Please enter" clearable />
+            <!-- <el-input v-model="queryParams.biomarkerName" placeholder="Please enter" clearable /> -->
+            <el-input v-model="queryParams.biomarkerName" placeholder="Please enter" @input="filterBiomarkOptions"
+              @blur="hideBiomarkDropdown" clearable>
+            </el-input>
+            <ul v-show="showBiomarkDropdown" class="dropdown-list">
+              <li v-for="(option, index) in filteredBiomarkOptions" :key="index" @click="selectBiomarkOption(option)">
+                {{ option }}
+              </li>
+            </ul>
           </el-form-item>
         </el-col>
 
         <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
           <el-form-item label="Testing Lab">
-            <el-input v-model="queryParams.testingLab" placeholder="Please enter" clearable />
+            <!-- <el-input v-model="queryParams.testingLab" placeholder="Please enter" clearable /> -->
+            <el-input v-model="queryParams.testingLab" placeholder="Please enter" @input="filterTestingLabOptions"
+              @blur="hideTestingLabDropdown" clearable>
+            </el-input>
+            <ul v-show="showTestingLabDropdown" class="dropdown-list">
+              <li v-for="(option, index) in filteredTestingLabOptions" :key="index" @click="selectTestingLabOption(option)">
+                {{ option }}
+              </li>
+            </ul>
           </el-form-item>
         </el-col>
         <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
           <el-form-item label="Assay Name">
-            <el-input v-model="queryParams.assayName" placeholder="Please enter" clearable />
+            <!-- <el-input v-model="queryParams.assayName" placeholder="Please enter" clearable /> -->
+            <el-input v-model="queryParams.assayName" placeholder="Please enter" @input="filterAssayNameOptions"
+              @blur="hideAssayNameDropdown" clearable>
+            </el-input>
+            <ul v-show="showAssayNameDropdown" class="dropdown-list">
+              <li v-for="(option, index) in filteredAssayNameOptions" :key="index" @click="selectAssayNameOption(option)">
+                {{ option }}
+              </li>
+            </ul>
           </el-form-item>
         </el-col>
 
@@ -150,41 +170,6 @@
               width="100%" clearable />
           </el-form-item>
         </el-col>
-
-
-
-        <!-- <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
-          <el-form-item label="Milestone" class="">
-            <el-row :gutter="10">
-              <el-col :span="12">
-                <el-select-v2 v-model="queryParams.startDateType" placeholder="Please select" :options="dateTypeOptions"
-                  clearable style="width: 100%" />
-              </el-col>
-
-              <el-col :span="12">
-                <el-date-picker v-model="queryParams.startDate" type="date" placeholder="Pick a date" width="100%"
-                  clearable />
-              </el-col>
-            </el-row>
-          </el-form-item>
-        </el-col>
-        <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
-          <el-form-item label="Milestone" class="">
-            <el-row :gutter="10">
-              <el-col :span="12">
-                <el-select-v2 v-model="queryParams.endDateType" placeholder="Please select" :options="dateTypeOptions"
-                  clearable style="width: 100%" />
-              </el-col>
-
-              <el-col :span="12">
-                <el-date-picker v-model="queryParams.endDate" type="date" placeholder="Pick a date" width="100%"
-                  clearable />
-              </el-col>
-            </el-row>
-          </el-form-item>
-        </el-col> -->
-
-
 
       </el-row>
       <el-row class="flex-x-end">
@@ -270,7 +255,7 @@ const loading = ref(false);
 const total = ref(0);
 const dateRange = ref([]);
 const multipleSelection = ref<StudyList[]>([]);
-  const props = defineProps({
+const props = defineProps({
   studys: {
     type: Array<StudyList>,
     default: []
@@ -410,15 +395,21 @@ const dateTypeOptions = ref<OptionType[]>([
 
 const franchiseNameOptions = ref([]);
 const studyNameOptions = ref([]);
-// const studyNameOptions = [];
-// const biomarkerOptions = [];
-// const testingLabOptions = [];
-// const assayNameOptions = [];
+const biomarkerOptions = ref([]);
+const testingLabOptions = ref([]);
+const assayNameOptions = ref([]);
 
 const showDropdown = ref(false);
 const showStudyDropdown = ref(false);
+const showBiomarkDropdown = ref(false);
+const showTestingLabDropdown = ref(false);
+const showAssayNameDropdown = ref(false);
+
 const filteredOptions = ref<string[]>([]);
-  const filteredStudyOptions = ref<string[]>([]);
+const filteredStudyOptions = ref<string[]>([]);
+const filteredBiomarkOptions = ref<string[]>([]);
+const filteredTestingLabOptions = ref<string[]>([]);
+const filteredAssayNameOptions = ref<string[]>([]);
 const filterOptions = (event: string) => {
   if (franchiseNameOptions.value.length > 0) {
     const value = event
@@ -451,14 +442,98 @@ const filterStudyOptions = (event: string) => {
     filteredStudyOptions.value = studyNameOptions.value.filter(option =>
       option.toLowerCase().includes(value.toLowerCase())
     );
-    showDropdown.value = true;
+    showStudyDropdown.value = true;
   }
 
 };
 
 const selectStudyOption = (option: string) => {
-  queryParams.franchiseName = option;
-  showDropdown.value = false;
+  queryParams.studyName = option;
+  showStudyDropdown.value = false;
+};
+
+const filterBiomarkOptions = (event: string) => {
+  if (biomarkerOptions.value.length > 0) {
+    const value = event
+    queryParams.biomarkerName = value;
+    if (!value) {
+      showBiomarkDropdown.value = false;
+      return;
+    }
+    filteredBiomarkOptions.value = biomarkerOptions.value.filter(option =>
+      option.toLowerCase().includes(value.toLowerCase())
+    );
+    showBiomarkDropdown.value = true;
+  }
+
+};
+
+const selectBiomarkOption = (option: string) => {
+  queryParams.biomarkerName = option;
+  showBiomarkDropdown.value = false;
+};
+
+const hideBiomarkDropdown = () => {
+  setTimeout(() => {
+    showBiomarkDropdown.value = false;
+  }, 200); // 延迟200毫秒隐藏下拉列表
+
+};
+
+const filterTestingLabOptions = (event: string) => {
+  if (testingLabOptions.value.length > 0) {
+    const value = event
+    queryParams.testingLab = value;
+    if (!value) {
+      showTestingLabDropdown.value = false;
+      return;
+    }
+    filteredTestingLabOptions.value = testingLabOptions.value.filter(option =>
+      option.toLowerCase().includes(value.toLowerCase())
+    );
+    showTestingLabDropdown.value = true;
+  }
+
+};
+
+const selectTestingLabOption = (option: string) => {
+  queryParams.testingLab = option;
+  showTestingLabDropdown.value = false;
+};
+
+const hideTestingLabDropdown = () => {
+  setTimeout(() => {
+    showTestingLabDropdown.value = false;
+  }, 200); // 延迟200毫秒隐藏下拉列表
+
+};
+
+const filterAssayNameOptions = (event: string) => {
+  if (assayNameOptions.value.length > 0) {
+    const value = event
+    queryParams.assayName = value;
+    if (!value) {
+      showAssayNameDropdown.value = false;
+      return;
+    }
+    filteredAssayNameOptions.value = assayNameOptions.value.filter(option =>
+      option.toLowerCase().includes(value.toLowerCase())
+    );
+    showAssayNameDropdown.value = true;
+  }
+
+};
+
+const selectAssayNameOption = (option: string) => {
+  queryParams.assayName = option;
+  showAssayNameDropdown.value = false;
+};
+
+const hideAssayNameDropdown = () => {
+  setTimeout(() => {
+    showAssayNameDropdown.value = false;
+  }, 200); // 延迟200毫秒隐藏下拉列表
+
 };
 
 const handleCompare = () => {
@@ -487,45 +562,49 @@ function handleQuery() {
 /** 重置查询 */
 function handleResetQuery() {
   queryParams.pageNum = 1,
-  queryParams.pageSize= 10,
-  queryParams.studyManagmentType= '',
-  queryParams.franchiseName='',
-  queryParams.studyName='',
-  queryParams.studyPhase= '',
-  queryParams.studyTumorType= '',
-  queryParams.studyLine= '',
-  queryParams.studyStatus= '',
-  queryParams.mainStudyDesign= '',
-  queryParams.testingManagmentType= '',
-  queryParams.biomarkerName = '',
-  queryParams.testingLab= '',
-  queryParams.assayName='',
-  queryParams.sampleType='',
-  queryParams.technologyGroup= '',
-  queryParams.cdxManagedBy= '',
-  queryParams.dateType= '',
-  queryParams.startDate= '',
-  queryParams.endDate=''
+    queryParams.pageSize = 10,
+    queryParams.studyManagmentType = '',
+    queryParams.franchiseName = '',
+    queryParams.studyName = '',
+    queryParams.studyPhase = '',
+    queryParams.studyTumorType = '',
+    queryParams.studyLine = '',
+    queryParams.studyStatus = '',
+    queryParams.mainStudyDesign = '',
+    queryParams.testingManagmentType = '',
+    queryParams.biomarkerName = '',
+    queryParams.testingLab = '',
+    queryParams.assayName = '',
+    queryParams.sampleType = '',
+    queryParams.technologyGroup = '',
+    queryParams.cdxManagedBy = '',
+    queryParams.dateType = '',
+    queryParams.startDate = '',
+    queryParams.endDate = ''
 
 }
 
 const hideDropdown = () => {
-  showDropdown.value = false;
+  setTimeout(() => {
+    showDropdown.value = false;
+  }, 200); // 延迟200毫秒隐藏下拉列表
+
+};
+const hideStudyDropdown = () => {
+  setTimeout(() => {
+    showStudyDropdown.value = false;
+  }, 200); // 延迟200毫秒隐藏下拉列表
+
 };
 
-
-function handleEditClick(studyName:string) {
-//   router.push(path:"/study/line",
-//   query: {
-//       a: 1
-//     });
+function handleEditClick(studyName: string) {
 
   router.push({
-      path: '/study/line',
-      query: {
-        studyName
-      }
-    });
+    path: '/study/line',
+    query: {
+      studyName
+    }
+  });
 }
 function getStudyManagementTypeOptions() {
 
@@ -546,6 +625,10 @@ function getStudyStatusOptions() {
 const loadOptionsData = async () => {
   StudyAPI.getAllOptions().then((data) => {
     franchiseNameOptions.value = data.franchiseOptions;
+    studyNameOptions.value = data.studyNameOptions;
+    biomarkerOptions.value = data.biomarkerOptions;
+    testingLabOptions.value = data.testingLabOptions;
+    assayNameOptions.value = data.assayNameOptions;
 
   })
 };
@@ -566,13 +649,13 @@ onBeforeMount(() => {
 watchEffect(() => {
   if (props.studys) {
     studyList.value = props.studys
-    
+
   }
   if (props.total) {
-    
-    total.value =  props.total;
+
+    total.value = props.total;
   }
-  
+
 })
 </script>
 <style lang="scss" scoped>

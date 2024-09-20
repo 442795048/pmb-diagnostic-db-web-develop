@@ -91,7 +91,7 @@
           @add-panel="addPanelChild" @delete-panel="deletePanelChild" @update-panel="updatePanel"
           @add-panel-child="addPanelChild">
           <template #panel-widget="{ row, index }">
-            <el-form :model="row" label-position="top" label-width="150" class="filter-form-inline common-form"
+            <el-form :model="row" label-position="top" label-width="150" class="filter-form-inline"
               style="margin-top: 10px;width: 100%;" ref="queryFormRef">
               <el-row :gutter="10">
                 <el-col :span="6">
@@ -188,7 +188,7 @@ const disabled = ref<Boolean>(false)
 const activePanelsChild = ref<String>("0");
 
 const addPanelToFirst = () => {
-  panelForms.value.unshift({});
+  panelForms.value.push({});
   // 折叠其他面板
   activePanels.value = "0";
 };
@@ -198,7 +198,7 @@ const emits = defineEmits(['handleHgrSubmissionDate','handleHgrApproveDate'])
  * 子级添加面板
  */
 const addPanelChild = (panelList) => {
-  panelList.unshift({ panelForms: [{}] });
+  panelList.push({ panelForms: [{}] });
   activePanelsChild.value = "0";
 }
 

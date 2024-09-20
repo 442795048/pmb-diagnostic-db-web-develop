@@ -350,7 +350,7 @@ const localIecNeededOptions = ref<OptionType[]>([
 const emits = defineEmits(['handleCount', 'handleWps'])
 
 const addPanelToFirst = () => {
-  panelForms.value.unshift({});
+  panelForms.value.push({});
   // 折叠其他面板
   activePanels.value = "0";
 

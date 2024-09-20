@@ -31,13 +31,13 @@
             </el-col>
             <el-col v-if="showSub" :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Sub Event Level">
-                <el-select-v2 v-model="item.eventLevel2Sub" placeholder="Please select" :options="eventSubOptions"
+                <el-select-v2 v-model="item.subEventLevel" placeholder="Please select" :options="eventSubOptions"
                   clearable />
               </el-form-item>
             </el-col>
             <el-col v-if="showSubLevel3" :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Sub Event Level">
-                <el-select-v2 v-model="item.eventLevel3Sub" placeholder="Please select" :options="eventSubLevel3Options"
+                <el-select-v2 v-model="item.subEventLevel" placeholder="Please select" :options="eventSubLevel3Options"
                   clearable />
               </el-form-item>
             </el-col>
@@ -156,7 +156,7 @@ const formData = reactive<StudyBasicForm>({
   //   code: '',
 });
 const addPanelToFirst = () => {
-  panelForms.value.unshift({});
+  panelForms.value.push({});
   // 折叠其他面板
   activePanels.value = "0";
 };
