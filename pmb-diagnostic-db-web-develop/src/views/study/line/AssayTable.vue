@@ -7,26 +7,26 @@
 					{{ scope.$index + 1 }}
 				</template>
 			</el-table-column>
-			<el-table-column label="Biomarker" prop="name" min-width="100" />
-			<el-table-column label="Partner" prop="name" min-width="100">
+			<el-table-column label="Biomarker" prop="biomark" min-width="100" />
+			<el-table-column label="Partner" prop="partner" min-width="100">
 				<template #default="scope">
-					<span class="text-btn">{{ scope.row.name }}</span>
+					<span class="text-btn">{{ scope.row.partner }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column label="Assay Name" prop="name" min-width="100" />
-			<el-table-column label="Testing Lab" prop="name" min-width="100">
+			<el-table-column label="Assay Name" prop="assayName" min-width="100" />
+			<el-table-column label="Testing Lab" prop="testingLab" min-width="100">
 				<template #default="scope">
-					<span class="text-btn">{{ scope.row.name }}</span>
+					<span class="text-btn">{{ scope.row.testingLab }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column label="Assay ID" prop="name" />
-			<el-table-column label="Summary Cut-off Date" prop="name" min-width="160" />
-			<el-table-column label="QC Report" prop="name" min-width="100">
+			<el-table-column label="Assay ID" prop="assayId" />
+			<el-table-column label="Summary Cut-off Date" prop="summaryCutoffDate" min-width="160" />
+			<el-table-column label="QC Report" prop="qcReport" min-width="100">
 				<template #default="scope">
-					<span class="text-btn">{{ scope.row.name }}</span>
+					<span class="text-btn">{{ scope.row.qcReport }}</span>
 				</template>
 			</el-table-column>
-			<el-table-column class="fixedSummary" label="Assay Summary" fixed="right" prop="name" width="130">
+			<el-table-column class="fixedSummary" label="Assay Summary" fixed="right" prop="assaySummary" width="130">
 				<template #default="scope">
 					<span class="text-btn">View</span>
 				</template>

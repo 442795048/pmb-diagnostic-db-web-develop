@@ -70,7 +70,9 @@ const customValue = ref(props.modelValue);
 watch(() => props.isEdit, (newValue) => {
 	isEditMode.value = newValue;
 });
-
+watch(() => props.modelValue, (newValue) => {
+	customValue.value = newValue;
+});
 const editText = () => {
 	isEditMode.value = true;
 	emits("handleEdit")

@@ -17,8 +17,8 @@
 				v-model="formData.mainStudyDesign" label="Main study design"
 				form-type="select" :options="designOptions" :isEdit="isEditMode" @handleEdit="handleEdit"
 			/>
-			<LabelValue v-model="formData.WP" label="WP #" :show-edit="false" />
-			<LabelValue v-model="formData.CDx" label="CDx #" :show-edit="false" />
+			<LabelValue v-model="formData.wp" label="WP #" :show-edit="false" />
+			<LabelValue v-model="formData.cdx" label="CDx #" :show-edit="false" />
 			<LabelValue
 				v-model="formData.studyStatus" label="Study Status"
 				form-type="select" :options="statusOptions" :isEdit="isEditMode" @handleEdit="handleEdit"
@@ -49,15 +49,14 @@
 </template>
 
 <script setup lang="ts">
-import { BasicInformation } from "../types/line";
+// import { BasicInformation } from "../types/line";
 import { phaseOptions, tumorTypeOptions, indicationOptions, lineOptions, designOptions, statusOptions } from "../common/line";
 import { reactive, defineEmits, onMounted, inject } from "vue";
 import LabelValue from "../components/LabelValue.vue";
 import StudyAPI from "@/api/study";
-import { result } from "lodash";
 const router = useRouter();
 const studyName: any = inject('studyName')
-const formData: BasicInformation = reactive({
+const formData: any = reactive({
 	oldStudyName: '',
 	studyName: '',
 	studyCode: '',
@@ -69,8 +68,8 @@ const formData: BasicInformation = reactive({
 	studyIndication: '',
 	studyLine: '',
 	mainStudyDesign: '',
-	WP: '',
-	CDx: '',
+	wp: '',
+	cdx: '',
 	studyStatus: ''
 })
 
@@ -90,6 +89,7 @@ const init = () => {
 		studyName: studyName.value
 	}
 	StudyAPI.getStudyByName(params).then(data => {
+		console.log(data)
 		const result: any = data || {}
 		Object.assign(formData, { ...result, oldStudyName: result.studyName })
 		emits('updateFormData', formData)

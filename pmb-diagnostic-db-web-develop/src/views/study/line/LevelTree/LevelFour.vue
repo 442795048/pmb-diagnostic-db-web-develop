@@ -55,7 +55,7 @@ const visible = computed(() => {
 const handleSave = () => {
 	loading.value = true;
   let insertParams = {
-    studyLevel6OtherAct: levelFormRef.value.getPanalForm(),
+    studyLevel5CdxList: levelFormRef.value.getPanalForm(),
 		studyName: studyName.value
   }
 	StudyAPI.addTreeData(insertParams).then((data) => {

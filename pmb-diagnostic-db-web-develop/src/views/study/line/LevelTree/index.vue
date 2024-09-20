@@ -170,7 +170,6 @@ const initTree = () => {
 			// 是否关联泳道 并在对应level2或level3的泳道中添加
 			const treeRowChildren = treeRow.children || []
 			treeRowChildren.forEach(item => {
-				item.subEventLevel = 'CTA_test_test_Tissue'
 				if (item.isGl) {
 					const treeRow = treeData.value.find((fi: any) => fi.treeLevel == item.eventLevel)
 					if (treeRow) {
@@ -201,7 +200,7 @@ const getTreeRow = (data:Array<any>, level: number, color: string, disabled?: an
 				code: `${item.name}_${getRandomKey()}`,
 				isCheck: false,
 				treeLevel: level,
-				isBar: item.eventType == 'Activity' && item.startDate && item.endDate, // item.startDate && item.endDate,
+				isBar: item.startDate && item.endDate, // item.startDate && item.endDate,
 				isTBD: !item.startDate,
 				date: item.startDate,
 				disabled,
