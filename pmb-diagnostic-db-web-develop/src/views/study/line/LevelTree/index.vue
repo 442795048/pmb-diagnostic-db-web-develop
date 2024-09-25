@@ -1,15 +1,11 @@
 <template>
-	<div class="custom-tree-container" :style="{ width: isShowTree ? '360px' : 'auto' }">
-		<div class="tree-icon">
-			<img v-if="isShowTree" :src="getImageUrl('icons/tree-display.svg')" @click="isShowTree = false">
-			<img v-else :src="getImageUrl('icons/tree-show.svg')"  @click="isShowTree = true">
-		</div>
+	<div class="custom-tree-container">
 		<!-- <p>Using scoped slot</p> -->
 		<el-tree v-show="isShowTree" ref="elTreeDom" style="max-width: 600px" :data="treeData" show-checkbox node-key="code" default-expand-all
 			:expand-on-click-node="false" :default-checked-keys="defaultCheckedKeys" @check-change="checkTreeChange">
 			<template #default="{ node, data }">
 				<span class="custom-tree-node">
-					<span>{{ node.label }}</span>
+					<span class="custom-tree-node-label">{{ node.label }}</span>
 					<span class="node-btn" v-if="getEditButton(node, data)" @click="handleClickEdit(node, data)">
 						Edit
 					</span>
@@ -76,7 +72,6 @@
 
 <script lang="ts" setup>
 import { ref, computed, onMounted, inject } from "vue";
-import { getImageUrl } from '@/utils/index'
 import LevelOne from './LevelOne.vue'
 import LevelTwo from './LevelTwo.vue'
 import LevelThree from './LevelThree.vue'
@@ -84,8 +79,8 @@ import LevelFour from './LevelFour.vue'
 import LevelSix from './LevelSix.vue'
 import type Node from "element-plus/es/components/tree/src/model/node";
 import StudyAPI from "@/api/study";
-import { treeLevelConfig, sortNameConfig } from '@/views/study/common/line'
-
+import { sortNameConfig } from '@/views/study/common/line'
+import { levelConfig } from '@/components/StoryLineChart/common'
 const emits = defineEmits(['checkTreeChange']);
 const studyName: any = inject('studyName')
 const treeData = ref<any>([]);
@@ -121,68 +116,67 @@ const initTree = () => {
 	return StudyAPI.viewStudy(studyName.value).then((data)=>{
 		const result: any = data || {}
 		const { level1Datas, level2Datas, level3Datas, level4Datas, level5Datas, level6Datas  } = result
-		if (level1Datas) {
-			const treeRow = getTreeRow(level1Datas, 1, '#a30014')
-			treeData.value.push({
-				...treeLevelConfig['level1'],
-				...treeRow,
-				btns: ['edit']
-			})
-		}
-		if (level2Datas) {
-			const treeRow = getAssayTreeRow(level2Datas, 2, '#f59a23')
-			treeData.value.push({
-				...treeLevelConfig['level2'],
-				...treeRow,
-				btns: ['edit']
-			})
-		}
-		if (level3Datas) {
-			const treeRow = getAssayTreeRow(level3Datas, 3, '#000080')
-			treeData.value.push({
-				...treeLevelConfig['level3'],
-				...treeRow,
-				btns: ['edit']
-			})
-		}
-		if (level4Datas) {
-			const treeRow = getTreeRow(level4Datas, 4, '#830051')
-			treeData.value.push({
-				...treeLevelConfig['level4'],
-				...treeRow,
-				btns: ['edit']
-			})
-		}
-		if (level5Datas) {
-			const treeRow = getTreeRow(level5Datas, 5, '#cccccc', true)
-			treeData.value.push({
-				...treeLevelConfig['level5'],
-				...treeRow
-			})
-		}
-		if (level6Datas) {
-			const treeRow = getTreeRow(level6Datas, 6, '#f59a23')
-			treeData.value.push({
-				...treeLevelConfig['level6'],
-				...treeRow,
-				btns: ['edit']
-			})
-			// 是否关联泳道 并在对应level2或level3的泳道中添加
-			const treeRowChildren = treeRow.children || []
-			treeRowChildren.forEach(item => {
-				if (item.isGl) {
-					const treeRow = treeData.value.find((fi: any) => fi.treeLevel == item.eventLevel)
-					if (treeRow) {
-						const treeRowChildren = treeRow.children || []
-						const assay = treeRowChildren.find((fi: any) => fi.label == item.subEventLevel)
-						if (assay) {
-							assay.children.push({ ...item, disabled: true })
-						}
+		// level2
+		const levelConfig1: any = levelConfig.find((fi: any) => fi.type == 'level1')
+		const row1 = getTreeRow(level1Datas, 1, levelConfig1.color)
+		treeData.value.push({
+			...levelConfig1,
+			...row1,
+			btns: ['edit']
+		})
+		// level2
+		const levelConfig2: any = levelConfig.find((fi: any) => fi.type == 'level2')
+		const row2 = getAssayTreeRow(level2Datas, 2, levelConfig2.color)
+		treeData.value.push({
+			...levelConfig2,
+			...row2,
+			btns: ['edit']
+		})
+		// level3
+		const levelConfig3: any = levelConfig.find((fi: any) => fi.type == 'level3')
+		const row3 = getAssayTreeRow(level3Datas, 3, levelConfig3.color)
+		treeData.value.push({
+			...levelConfig3,
+			...row3,
+			btns: ['edit']
+		})
+		// level4
+		const levelConfig4: any = levelConfig.find((fi: any) => fi.type == 'level4')
+		const row4 = getTreeRow(level4Datas, 4, levelConfig4.color)
+		treeData.value.push({
+			...levelConfig4,
+			...row4,
+			btns: ['edit']
+		})
+		// level5
+		const levelConfig5: any = levelConfig.find((fi: any) => fi.type == 'level5')
+		const row5 = getTreeRow(level5Datas, 5, levelConfig5.color, true)
+		treeData.value.push({
+			...levelConfig5,
+			...row5
+		})
+		// level6
+		const levelConfig6: any = levelConfig.find((fi: any) => fi.type == 'level6')
+		const row6 = getTreeRow(level6Datas, 6, levelConfig6.color)
+		treeData.value.push({
+			...levelConfig6,
+			...row6,
+			btns: ['edit']
+		})
+		// 是否关联泳道 并在对应level2或level3的泳道中添加
+		const treeRowChildren = row6.children || []
+		treeRowChildren.forEach(item => {
+			if (item.isGl) {
+				const treeRow = treeData.value.find((fi: any) => fi.treeLevel == item.eventLevel)
+				if (treeRow) {
+					const treeRowChildren = treeRow.children || []
+					const assay = treeRowChildren.find((fi: any) => fi.label == item.subEventLevel)
+					if (assay) {
+						assay.children.push({ ...item, disabled: true })
 					}
 				}
-			})
-		}
-		console.log(treeData.value)
+			}
+		})
 	})
 }
 
@@ -327,8 +321,8 @@ const handleClickEdit = (node: any, data: any, disabled?: any) => {
 		// 更新level的详情表单数据
 		const level = parentNode.data.treeLevel
 		const treeRow = resData[`studyLevel${level}`]
-		currentData.allFormData = resData
 		currentData.formData = treeRow
+		currentData.allFormData = resData
 		visible[`level${level}`] = true
 		showLevelDialog.value = true
 	})
@@ -391,29 +385,24 @@ watch(defaultCheckedKeys, (val) => {
 	justify-content: space-between;
 	padding-right: 8px;
 	font-size: 14px;
+	overflow: hidden;
 
 	.node-btn {
 		font-size: 12px;
 		color: #20a6fc;
 	}
-}
-.custom-tree-container {
-	width: 360px;
-	.tree-icon{
-		width: 30px;
-		cursor: pointer;
-		img {
-			width: 30px;
-			height: 30px;
-		}
+	.custom-tree-node-label{
+		white-space: nowrap;
+		text-overflow: ellipsis;
+		overflow: hidden;
+		width: 100%;
 	}
 }
-
-</style>
-<style lang="scss">
-.custom-tree-container{
-	.el-tree-node[aria-disabled=true]{
+.custom-tree-container {
+	position: relative;
+	:deep(.el-tree-node[aria-disabled=true]){
 		display: none;
 	}
 }
+
 </style>

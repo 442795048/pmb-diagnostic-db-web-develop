@@ -11,18 +11,18 @@
                 style="width: 150px"
               />
         </el-form-item>
-        <el-form-item label="Businesskeys" prop="businesskeys">
+        <el-form-item label="Primary Key" prop="primaryKey">
               <el-input
-                v-model="queryParams.businesskeys"
-                placeholder="businesskeys"
+                v-model="queryParams.primaryKey"
+                placeholder="primaryKey"
                 clearable
                 style="width: 150px"
               />
         </el-form-item>
-        <el-form-item label="Modified by" prop="username">
+        <el-form-item label="Operate by" prop="username">
               <el-input
                 v-model="queryParams.username"
-                placeholder="Modified by"
+                placeholder="Operate by"
                 clearable
                 style="width: 100px"
               />
@@ -72,23 +72,22 @@
             <el-table :data="props.row.userLogItems" border
             :header-cell-style="{fontSize: '12px', backgroundColor: '#f8f8f8',color:'#333'}"
             >
-              <el-table-column label="log level" prop="userLogType" align="center" width="100" fixed/>
-              <el-table-column label="business key" prop="businessKey" align="center" fixed :show-overflow-tooltip="true"/>
-              <el-table-column label="field name" prop="columnName" align="center" />
-              <el-table-column label="value before update" prop="value" align="center" />
-              <el-table-column label="value after update" prop="originalValue" align="center" />
-              <el-table-column label="Update reason" prop="modifyReason" align="center" />
-              <el-table-column label="Time of update" prop="createTime" align="center" />
+              <el-table-column label="Primary key" prop="primaryKey" align="center"/>
+              <el-table-column label="Field Name" prop="fieldName" align="center" />
+              <el-table-column label="Operate Type" prop="operateType" align="center" width="100" />
+              <el-table-column label="Value Before" prop="valueBefore" align="center" show-overflow-tooltip/>
+              <el-table-column label="Value After" prop="valueAfter" align="center" show-overflow-tooltip/>
+              <el-table-column label="Operate Time" prop="createTime" align="center" />
+              <el-table-column label="Operate by" prop="createBy" align="center" width="100" />
               <el-table-column label="operation" fixed="right" align="center" width="100">
               <template #default="scope">
                 <el-button
                   type="primary"
                   size="small"
                   link
-                  @click="handleOpenDialog(scope.row.businessKey)"
-                  :disabled="scope.row.userLogType === 'field' || scope.row.userLogType === 'record'">
-                  <el-icon><Paperclip /></el-icon>
-                  details
+                  @click="handleOpenDialog(props.row.tableName ,scope.row)">
+                    <el-icon><Paperclip /></el-icon>
+                    details
                 </el-button>
               </template>
               </el-table-column>
@@ -113,9 +112,25 @@
     <el-drawer
       v-model="dialog.visible"
       :title="dialog.title"
+      :withHeader = false
       append-to-body
       @close="handleCloseDialog"
     >
+      <el-timeline>
+        <el-timeline-item  v-for="(item, index) in timelineData"  :timestamp="item.createTime?.substring(0, 10)" placement="top"  :color = getColor(item.operateType)>
+          <el-card>
+            <div style="font-size: 10px; margin-top: 10px;">
+              <el-text truncated class="!mx-2 flex-1 !text-xs !text-[var(--el-text-color-secondary)]">修改前:  {{item.valueBefore}}</el-text>
+            </div>
+            <div style="font-size: 10px; margin-top: 10px;">
+              <el-text truncated class="!mx-2 flex-1 !text-xs !text-[var(--el-text-color-secondary)]">修改后:  {{item.valueAfter}}</el-text>
+            </div>
+            <div style="font-size: 10px; margin-top: 10px;">
+              <el-text truncated class="!mx-2 flex-1 !text-xs !text-[var(--el-text-color-secondary)]">{{item.createBy}}修改于{{item.createTime}}</el-text>
+            </div>
+          </el-card>
+        </el-timeline-item>
+      </el-timeline>
       <template #footer>
         <div class="dialog-footer">
           <el-button @click="handleCloseDialog">取 消</el-button>
@@ -131,13 +146,17 @@ defineOptions({
   inherititems: false,
 });
 
-import UserLogAPI, { UserLogPageQuery, UserLogPageVO, UserLogItemQuery, UserLogItemVO} from "@/api/user-log";
+import UserLogAPI, { UserLogPageQuery, UserLogPageVO, UserLogItemQuery, UserLogItemVO, TimelineQuery} from "@/api/user-log";
 
 const queryFormRef = ref(ElForm);
 
 const loading = ref(false);
 const ids = ref<number[]>([]);
 const total = ref(0);
+
+const color = ref('#0bbd87');
+
+const timelineData = ref<UserLogItemVO[]>();
 
 const queryParams = reactive<UserLogPageQuery>({
   pageNum: 1,
@@ -217,15 +236,33 @@ function expandChange(row: UserLogPageVO, expandedRows: any[]) {
 /**
  * 打开弹窗
  *
- * @param id 用户ID
+ * @param row
  */
- async function handleOpenDialog(id?: String) {
+ async function handleOpenDialog(tableName:string,row:any) {
+  timelineData.value = [];
+  const timelineParams = {"tableName":tableName,"primaryKey":row.primaryKey,"fieldName":row.fieldName};
+  UserLogAPI.listTimeline(timelineParams)
+    .then((data) => {
+      timelineData.value = data;
+      console.log("data",data);
+      console.log("timelineData.value",timelineData.value);
+    })
   dialog.visible = true;
 }
 
 /** 关闭弹窗 */
 function handleCloseDialog() {
   dialog.visible = false;
+}
+
+function getColor(status?:string) {
+  if (status === 'insert') {
+    return '#3fca60';
+  }else if (status === 'update'){
+    return '#f9a33f';
+  }else{
+    return '#eb5757';
+  }
 }
 
 onMounted(() => {

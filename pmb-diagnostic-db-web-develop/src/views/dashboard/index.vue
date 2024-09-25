@@ -20,9 +20,9 @@
             </div>
           </div>
         </el-col>
-
+        <!--
         <el-col :span="6" :xs="24">
-          <!--
+          
           <div class="flex h-full items-center justify-around">
             <el-statistic
               v-for="item in statisticData"
@@ -37,9 +37,33 @@
               </template>
               <template v-if="item.suffix" #suffix>/100</template>
             </el-statistic>
-          </div> -->
-        </el-col>
+          </div> 
+        </el-col>-->
       </el-row>
+    </el-card>
+
+    <!-- 收藏夹 -->
+    <el-card shadow="never">
+      <div class="card-container">
+        <el-card  v-for="item in favorite" :key="item.id" class="specific-card" style="width: 15%; margin-bottom: 15px;margin-left : 15px" @click="handleClick(item)">
+          <template #header>
+            <div class="flex-x-between">
+              <span style="font-size: 12px; font-family: 'Arial', sans-serif; font-weight: bold; color: #333333;">{{item.menuName}}</span>
+              <el-button type="danger" link icon="delete" @click.stop="handleDelete(item.id)"></el-button>
+            </div>
+          </template>
+          <el-text truncated >{{item.routerLink}}</el-text>
+        </el-card>
+        <el-card class="specific-card" style="width: 15%; margin-bottom: 15px; margin-left : 15px" @click="addClick()">
+          <template #header>
+            <div class="div-container">
+
+               <el-button type="primary" circle icon="Plus"></el-button>
+            </div>
+          </template>
+
+        </el-card>
+      </div>
     </el-card>
 
     <!-- 数据卡片
@@ -143,14 +167,14 @@
         </el-skeleton>
       </el-col>
     </el-row> -->
-
+    
+    <!-- 访问趋势统计图
     <el-row :gutter="10" class="mt-5">
       <el-col :xs="24" :span="16">
-        <!-- 访问趋势统计图
-        <VisitTrend id="VisitTrend" width="100%" height="400px" />  -->
+        <VisitTrend id="VisitTrend" width="100%" height="400px" />  
       </el-col>
       <el-col :xs="24" :span="8">
-        <!-- 
+        
         <el-card>
           <template #header>
             <div class="flex-x-between">
@@ -184,9 +208,30 @@
               </el-link>
             </div>
           </el-scrollbar>
-        </el-card> -->
+        </el-card>
       </el-col>
-    </el-row>
+    </el-row>-->
+    
+    <!-- 对话框 -->
+    <el-drawer
+       size="20%"
+      v-model="modalVisible"
+      append-to-body>
+      <el-form ref="formRef" :model="formData" :rules="rules">
+        <el-form-item label="请选择菜单" prop="menuName">
+        <el-select v-model="formData.menuName" placeholder="请选择菜单" style="width: 95%">
+          <el-option v-for="item in menuOptions":key="item.value":label="item.label":value="item.label"/>
+        </el-select>
+        </el-form-item>
+      </el-form>
+      <!-- 弹窗底部操作按钮 -->
+      <template #footer>
+        <div style="padding-right: var(--el-dialog-padding-primary)">
+          <el-button type="primary" @click="handleSubmit">确 定</el-button>
+          <el-button @click="handleClose">取 消</el-button>
+        </div>
+      </template>
+    </el-drawer> 
   </div>
 </template>
 
@@ -198,9 +243,37 @@ defineOptions({
 
 import { useUserStore } from "@/store/modules/user";
 import { NoticeTypeEnum, getNoticeLabel } from "@/enums/NoticeTypeEnum";
+import FavoriteAPI, { FavoriteVO,FavoriteForm} from "@/api/favorite";
+import { useRouter } from 'vue-router';
 
 import StatsAPI, { VisitStatsVO } from "@/api/log";
+
+/** 用户信息 */
 const userStore = useUserStore();
+
+/** 路由器 */
+const router = useRouter();
+
+/** 弹窗是否可见 */
+const modalVisible = ref(false);
+
+/** 收藏夹看板 */
+const formRef = ref(ElForm); // 新增面板
+
+/** 收藏夹表单 */
+let formData = reactive<FavoriteForm>({});
+
+/** 用户表单校验规则  */
+const rules = reactive({
+  menuName: [{ required: true, message: "This field is required", trigger: "blur" }],
+});
+
+/** 收藏夹列表  */
+const favorite = ref<FavoriteVO[]>([]);
+
+/** 菜单下拉选项 */
+const menuOptions = ref<OptionType[]>();
+
 
 const date: Date = new Date();
 const greetings = computed(() => {
@@ -388,8 +461,75 @@ const getNoticeLevelTag = (type: number) => {
   }
 };
 
+/** 删除 */
+function handleDelete(id?: number) {
+  ElMessageBox.confirm("确认删除?", "警告", {
+    confirmButtonText: "确定",
+    cancelButtonText: "取消",
+    type: "warning",
+  }).then(
+    function () {
+      if (id) {
+        FavoriteAPI.deleteById(id)
+        .then(() => {
+          ElMessage.success("删除成功");
+          handleQuery();
+        })
+        .finally(() => (handleQuery()));
+      }
+    },
+    function () {
+      ElMessage.info("已取消删除");
+    }
+  );
+}
+
+/** 查询 */
+function handleQuery() {
+  FavoriteAPI.getFavoriteList()
+    .then((data) => {
+      favorite.value = data;
+    })
+}
+
+// 添加收藏
+function addClick() {
+  modalVisible.value = true
+}
+
+// 表单关闭
+function handleClose() {
+  modalVisible.value = false;
+  return;
+}
+
+// 表单提交
+const handleSubmit = useThrottleFn(() => {
+  formRef.value?.validate((valid: boolean) => {
+    if (valid) {
+      FavoriteAPI.add(formData)
+        .then(() => {
+          ElMessage.success("修改成功");
+        })
+        .finally(() => {modalVisible.value = false; handleQuery();});
+    }
+  });
+}, 1000);
+
+// 跳转路由
+function handleClick(item?:FavoriteVO) {
+    if (item && item.routerLink){
+      router.push(item.routerLink);  
+    }
+}
+
+
 onMounted(() => {
   loadVisitStatsData();
+  FavoriteAPI.getMenuOptions().then((data) => {
+    menuOptions.value = data;
+  });
+ handleQuery();
 });
 </script>
 
@@ -405,5 +545,29 @@ onMounted(() => {
     z-index: 1;
     border: 0;
   }
+}
+
+.centered-card {
+  width: 90%; /* 或者其他宽度 */
+  display: flex;
+  justify-content: center; /* 水平居中 */
+  align-items: center; /* 垂直居中 */
+}
+
+.card-container {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.specific-card:hover {
+  background-color: #f0f0f0; /* 更改背景颜色 */
+  cursor: pointer; /* 更改鼠标光标为指针形状 */
+  margin-top: -2px;
+}
+
+.div-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>

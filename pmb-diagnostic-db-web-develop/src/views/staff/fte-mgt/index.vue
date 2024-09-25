@@ -2,7 +2,7 @@
 <template>
   <div class="app-container">
     <!-- 查询条件-->
-    <el-collapse>
+    <el-collapse v-model="collapseActiveNamesOfQuery">
       <el-collapse-item name="1">
         <template #title>
         </template>
@@ -43,7 +43,7 @@
                   reserve-keyword
                   clearable
                   placeholder="请输入关键词"
-                  :remote-method="remoteMethodForStudyName"
+                  :remote-method="(query:any)=>{remoteMethodForStudyName(query,'query')}"
                   :loading="loading">
                   <el-option
                     v-for="item in studyNameOptions"
@@ -127,7 +127,7 @@
                   reserve-keyword
                   clearable
                   placeholder="请输入关键词"
-                  :remote-method="remoteMethodForStudyDcode"
+                  :remote-method="(query:any)=>{remoteMethodForStudyDcode(query,'query')}"
                   :loading="loading">
                   <el-option
                     v-for="item in studyDcodeOptions"
@@ -150,7 +150,7 @@
                   reserve-keyword
                   clearable
                   placeholder="请输入关键词"
-                  :remote-method="remoteMethodForActivityId"
+                  :remote-method="(query:any)=>{remoteMethodForActivityId(query,'query')}"
                   :loading="loading">
                   <el-option
                     v-for="item in activityIdOptions"
@@ -236,13 +236,13 @@
         >
       </template>
       <el-row :gutter="0" >
-          <div class="centered-text">您好，现在为2024年1月，请填写2024,1至2025,1的FTE相关数据</div>
+          <div class="centered-text">{{tipMessage}}</div>
       </el-row>
 
       <el-table
         ref = "queryListRef"
         @selection-change="handleSelectionChange"
-        max-height="400"
+        max-height="450"
         v-loading="loading"
         :row-style="getRowClassName"
         show-header
@@ -298,7 +298,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime1" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime1}}</span>
@@ -311,7 +311,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime2" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime2}}</span>
@@ -324,7 +324,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime3" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime3}}</span>
@@ -337,7 +337,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime4" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime4}}</span>
@@ -350,7 +350,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime5" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime5}}</span>
@@ -363,7 +363,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime6" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime6}}</span>
@@ -376,7 +376,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime7" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime7}}</span>
@@ -389,7 +389,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime8" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime8}}</span>
@@ -402,7 +402,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime9" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime9}}</span>
@@ -415,7 +415,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime10" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime10}}</span>
@@ -428,7 +428,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime11" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime11}}</span>
@@ -441,7 +441,7 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime12" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime12}}</span>
@@ -454,10 +454,179 @@
             </div>
           </template>
           <template #default="scope">
-            <span v-if="scope.row.isEdit">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
               <el-input size="small" v-model="scope.row.fteTime13"></el-input>
             </span>
             <span v-else>{{scope.row.fteTime13}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime14" label="fteTime14" min-width="65" v-if="fteTimes[13]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[13] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime14" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime14}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime15" label="fteTime15" min-width="65" v-if="fteTimes[14]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[14] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime15" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime15}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime16" label="fteTime16" min-width="65" v-if="fteTimes[15]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[15] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime16" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime16}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime17" label="fteTime17" min-width="65" v-if="fteTimes[16]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[16] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime17" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime17}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime18" label="fteTime18" min-width="65" v-if="fteTimes[17]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[17] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime18" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime18}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime19" label="fteTime19" min-width="65" v-if="fteTimes[18]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[18] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime19" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime19}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime20" label="fteTime20" min-width="65" v-if="fteTimes[19]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[19] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime20" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime20}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime21" label="fteTime21" min-width="65" v-if="fteTimes[20]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[20] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime21" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime21}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime22" label="fteTime22" min-width="65" v-if="fteTimes[21]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[21] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime22" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime22}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime23" label="fteTime23" min-width="65" v-if="fteTimes[22]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[22] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime23" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime23}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime24" label="fteTime24" min-width="65" v-if="fteTimes[23]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[23] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime24" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime24}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime25" label="fteTime25" min-width="65" v-if="fteTimes[24]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[24] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime25" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime25}}</span>
+          </template>
+        </el-table-column>
+        <el-table-column prop="fteTime26" label="fteTime26" min-width="65" v-if="fteTimes[25]">
+          <template #header>
+            <div>
+              <span class="no-wrap">{{ fteTimes[25] }}</span>
+            </div>
+          </template>
+          <template #default="scope">
+            <span v-if="scope.row.isEdit && parseInt(scope.column.property.substring(7)) >= currentfield">
+              <el-input size="small" v-model="scope.row.fteTime26" @blur="onInputTableBlur(scope)" @focus="onInputTableFocus(scope)"></el-input>
+            </span>
+            <span v-else>{{scope.row.fteTime26}}</span>
           </template>
         </el-table-column>
          <el-table-column label="操作" fixed="right" align="left" width="60">
@@ -483,14 +652,16 @@
     <div style="height: 5px;"></div>
 
     <!-- 折线图 + 柱状图-->
-    <el-collapse :value = '1'>
+    <el-collapse v-model="collapseActiveNamesOfChart">
       <el-collapse-item name="1">
         <el-row :gutter="0">
           <el-col :span="12">
-            <LineChart id="LineChart1" width="500px" height="300px" ref="childRef"/>  
+            <div style="width: 10px;"></div>
+            <LineChart id="LineChart1" width="100%" height="300px" :data =lineChartData />  
           </el-col>
           <el-col :span="12" >
-            <BarChart id="LineChart2" width="500px" height="300px" :data = barChartData />
+            <div style="width: 10px;"></div>
+            <BarChart id="BarChart1" width="100%" height="300px" :data = barChartData />
           </el-col>
         </el-row>
       </el-collapse-item>
@@ -593,7 +764,7 @@
             reserve-keyword
             clearable
             placeholder="请输入关键词"
-            :remote-method="remoteMethodForStudyDcode"
+            :remote-method="(query:any)=>{remoteMethodForStudyDcode(query,'edit',formData.franchise)}"
             :loading="loading">
             <el-option
               v-for="item in studyDcodeOptions"
@@ -611,7 +782,7 @@
             reserve-keyword
             clearable
             placeholder="请输入关键词"
-            :remote-method="remoteMethodForStudyName"
+            :remote-method="(query:any)=>{remoteMethodForStudyName(query,'edit',formData.franchise)}"
             :loading="loading">
             <el-option
               v-for="item in studyNameOptions"
@@ -639,7 +810,7 @@
             reserve-keyword
             clearable
             placeholder="请输入关键词"
-            :remote-method="remoteMethodForActivityId"
+            :remote-method="(query:any)=>{remoteMethodForActivityId(query,'edit',formData.activityType)}"
             :loading="loading">
             <el-option
               v-for="item in activityIdOptions"
@@ -673,40 +844,44 @@ defineOptions({
   inherititems: false,
 });
 
-import FteMgtAPI, { FteMgtForm, FteMgtQuery, FteMgtVO, BarChartVO, Series, Emphasis} from "@/api/staff";
+import FteMgtAPI, { FteMonthTipVO, FteMgtForm, FteMgtQuery, FteMgtVO, LineChartVO, BarChartVO, Series, Emphasis} from "@/api/staff";
 import DictAPI from "@/api/dict";
 
-const queryFormRef = ref(ElForm);
-const fteMgtFormRef = ref(ElForm);
-
-const queryListRef = ref<InstanceType<typeof ElTable>>();
+const queryFormRef = ref(ElForm); // 查询面板
+const queryListRef = ref<InstanceType<typeof ElTable>>(); // 查询结果面板
+const fteMgtFormRef = ref(ElForm); // 新增、编辑面板
 
 const loading = ref(false);
 
-const isSubmit = ref(0);
+const isSubmit = ref(0); // 控制右边提交按钮是否展示
 
-let originalValue  = "0";
+let originalValue:any  = undefined; //fte单元格被编辑前的值
 
-let totalRowId  = 0;
+let totalRowId  = 0; // fte排除汇总行的行数
 
-let selectionKeys = [];
+let selectionKeys = []; // 缓存勾选的行ID
 
+let collapseActiveNamesOfQuery = ['1'];
+let collapseActiveNamesOfChart = ['1'];
+
+const queryParams = reactive<FteMgtQuery>({});
+const tableData = ref<FteMgtVO[]>();
+const fteTimes = ref<string[]>([]);
+
+let tipMessage = ref("");
+let currentfield = ref();
+let endfield = ref();
+
+const barChartData = ref<BarChartVO>(); // 柱状图
+const lineChartData = ref<LineChartVO>(); // 折线图
+
+const tableRowInputRef: any = ref(null) // 控制双击编辑
 const state = reactive({
   // 编辑的表格行
   tableRowEditIndex: undefined,
   // 编辑的表格列
   tableColumnEditIndex: undefined
 })
-
-const queryParams = reactive<FteMgtQuery>({});
-const tableData = ref<FteMgtVO[]>();
-const fteTimes = ref<string[]>([]);
-
-const barChartData = ref<BarChartVO>();
-
-const tableRowInputRef: any = ref(null)
-
-const childRef = ref(null);
 
 /** GPT_Led_By下拉选项 */
 const gptLedByOptions = ref<OptionType[]>();
@@ -780,12 +955,25 @@ const key10:Properties = 'fteTime10';
 const key11:Properties = 'fteTime11';
 const key12:Properties = 'fteTime12';
 const key13:Properties = 'fteTime13';
-let fieldList = [key1,key2,key3,key4,key5,key6,key7,key8,key9,key10,key11,key12,key12,key13]
+const key14:Properties = 'fteTime14';
+const key15:Properties = 'fteTime15';
+const key16:Properties = 'fteTime16';
+const key17:Properties = 'fteTime17';
+const key18:Properties = 'fteTime18';
+const key19:Properties = 'fteTime19';
+const key20:Properties = 'fteTime20';
+const key21:Properties = 'fteTime21';
+const key22:Properties = 'fteTime22';
+const key23:Properties = 'fteTime23';
+const key24:Properties = 'fteTime24';
+const key25:Properties = 'fteTime25';
+const key26:Properties = 'fteTime26';
+let fieldList = [key1,key2,key3,key4,key5,key6,key7,key8,key9,key10,key11,key12,key13,
+                 key14,key15,key16,key17,key18,key19,key20,key21,key22,key23,key24,key25,key26
+                ]
 
 /** 查询 */
 function handleQuery() {
-
-  console.log("startMonth",queryParams.startMonth);
   if(queryParams.startMonth===undefined){
     ElMessage.success("请选择开始月份");
     return;
@@ -795,8 +983,8 @@ function handleQuery() {
     return;
   }
 
-  if (monthDifference(queryParams.startMonth,queryParams.endMonth) >= 14){
-    ElMessage.success("月份跨度大于13，请重新选择");
+  if (monthDifference(queryParams.startMonth,queryParams.endMonth) > 25){
+    ElMessage.success("月份跨度大于25，请重新选择");
     return;
   }
   loading.value = true;
@@ -833,13 +1021,14 @@ function handleQuery() {
       tableData.value = data.fteMgtList;
       fteTimes.value =data.fteTimeHeaderList || [];
       totalRowId = data.totalRowId ? data.totalRowId : 0;
+      currentfield.value = data.currentfield ? data.currentfield : 0;
+      endfield.value = data.endfield ? data.endfield : 0;
     })
     .finally(() => {
       loading.value = false;
   });
   setTimeout(() => {
     updateSelectionState();
-    recalculate();
   }, 1000);
 }
 
@@ -850,7 +1039,6 @@ function changeSwitch(row: { [key: string]: any }){
   }else{
     isSubmit.value=isSubmit.value-1;
   }
-  console.log(isSubmit.value)
 }
 
 /** 双击可编辑的单元格 */
@@ -858,7 +1046,6 @@ const dbClickCell = (scope: any) => {
   if (scope.row.fteTimeType == 'Resource Gap'){
     return;
   }
-  // console.log(scope)
   // 找到单个格子独有的属性 - 这里是用所在行跟列id区别显示
   state.tableRowEditIndex = scope.$index
   state.tableColumnEditIndex = scope.column.id
@@ -870,13 +1057,11 @@ const dbClickCell = (scope: any) => {
 
 /** 表格中input获取焦点 */
 const onInputTableFocus = (scope: any) => {
-  //console.log('获取焦点', scope)
   const id = scope.row.id
   const key = scope.column.property
   const value = scope.row[key]
   if (typeof tableData.value !== 'undefined' && typeof tableData.value.length !== 'undefined'){
-    const originalValue =  (value === null) ? '0': value;
-    console.log('获取焦点', originalValue)
+    originalValue = value;
   }
 }
 
@@ -887,6 +1072,7 @@ const onInputTableBlur = (scope: any) => {
   const id = scope.row.id
   const key = scope.column.property
   const value = scope.row[key]
+  if (originalValue === value) return; // 数值没有变化，直接返回
   if (typeof tableData.value !== 'undefined' && typeof tableData.value.length !== 'undefined'){
     /** 单行合计 */
     if (scope.row.fteTimeType == 'Demand FTE'){
@@ -918,6 +1104,9 @@ const onInputTableBlur = (scope: any) => {
     setValue(tableData.value[totalRowId + 2], key, formatToTwoDecimals(totalResourceGap));
 
     fteSubmit(scope);
+
+    recalculateBarChart();
+    recalculateLineChart();
   }
 }
 
@@ -944,7 +1133,6 @@ function getValue<T, K extends keyof T>(obj: T, key: K) : any {
  */
  async function handleOpenDialog(id?: number) {
   dialog.visible = true;
-  console.log("打开弹窗",id)
   if (id) {
     dialog.title = "修改";
     FteMgtAPI.getFormData(id).then((data) => {
@@ -1025,7 +1213,7 @@ const mainSubmit = useThrottleFn(() => {
           })
           .finally(() => (loading.value = false));
       } else {
-        FteMgtAPI.add(formData)
+        FteMgtAPI.addMain(formData)
           .then(() => {
             ElMessage.success("新增成功");
             handleCloseDialog();
@@ -1049,7 +1237,6 @@ const fteSubmit = useThrottleFn((scope: any) => {
 
   const index = scope.column.property;
   loading.value = true;
-  console.log('index',index);
   if (index) {
     FteMgtAPI.updateFte(index, fteMgtData)
             .then(() => {
@@ -1057,6 +1244,7 @@ const fteSubmit = useThrottleFn((scope: any) => {
             })
             .finally(() => (loading.value = false));
   }
+
 }, 3000);
 
 /** 求月份差 */
@@ -1093,11 +1281,29 @@ onBeforeMount(() => {
   DictAPI.getOptions("activityType").then((data) => {
     activityTypeOptions.value = data;
   });
+  FteMgtAPI.getFteMonthTip().then((data) => {
+    tipMessage.value = data.tip? data.tip: "";
+    if(queryParams.startMonth===undefined && data.currentMonth){
+      queryParams.startMonth = createMonthDate(data.currentMonth);
+    }
+    if(queryParams.endMonth===undefined && data.endMonth){
+      queryParams.endMonth = createMonthDate(data.endMonth);
+    }
+  })
 });
+
+/** 将一个形如 "2024-09" 的字符串（只包含年份和月份）转换为一个 Date 对象 */
+function createMonthDate(yearMonthStr: string): Date {
+    const [year, month] = yearMonthStr.split('-').map(part => parseInt(part, 10));
+    if (isNaN(year) || isNaN(month)) {
+        throw new Error('Invalid year-month string');
+    }
+    // 注意：在 Date 构造函数中，月份是从 0 开始的，所以需要减去 1
+    return new Date(year, month - 1, 1);
+}
 
 function remoteMethodForStaffName(query:any) {
   if (query !== '') {
-    console.log('query',query);
     loading.value = true;
     setTimeout(() => {
       loading.value = false;
@@ -1116,7 +1322,6 @@ function remoteMethodForStaffName(query:any) {
 
 function remoteMethodForFranchise(query:any) {
   if (query !== '') {
-    console.log('query',query);
     loading.value = true;
     setTimeout(() => {
       loading.value = false;
@@ -1133,12 +1338,12 @@ function remoteMethodForFranchise(query:any) {
   }
 }
 
-function remoteMethodForStudyName(query:any) {
+function remoteMethodForStudyName(query:any, type:string, franchise?:string) {
   if (query !== '') {
     loading.value = true;
     setTimeout(() => {
       loading.value = false;
-      FteMgtAPI.getStudyNameOptions({"franchise": franchiseSelectedValues.value?.join(","),"studyName": query })
+      FteMgtAPI.getStudyNameOptions({"franchise": type==='query' ? franchiseSelectedValues.value?.join(","):franchise,"studyName": query })
       .then((data) => {
         studyNameOptions.value = data;
       })
@@ -1151,13 +1356,12 @@ function remoteMethodForStudyName(query:any) {
   }
 }
 
-function remoteMethodForStudyDcode(query:any) {
-  console.log("franchiseSelectedValues.value",franchiseSelectedValues.value)
+function remoteMethodForStudyDcode(query:any, type:string, franchise?:string) {
   if (query !== '') {
     loading.value = true;
     setTimeout(() => {
       loading.value = false;
-      FteMgtAPI.getStudyDcodeOptions({"franchise": franchiseSelectedValues.value?.join(","),"studyDcode": query })
+      FteMgtAPI.getStudyDcodeOptions({"franchise": type==='query' ? franchiseSelectedValues.value?.join(","):franchise,"studyDcode": query })
       .then((data) => {
         studyDcodeOptions.value = data;
       })
@@ -1170,12 +1374,13 @@ function remoteMethodForStudyDcode(query:any) {
   }
 }
 
-function remoteMethodForActivityId(query:any) {
+function remoteMethodForActivityId(query:any,type:string, activityType?:string) {
+  debugger
   if (query !== '') {
     loading.value = true;
     setTimeout(() => {
       loading.value = false;
-      FteMgtAPI.getActivityIdOptions({"activityType": activityTypeSelectedValues.value?.join(","),"activityId": query })
+      FteMgtAPI.getActivityIdOptions({"activityType": type==='query' ? activityTypeSelectedValues.value?.join(",") : activityType,"activityId": query })
       .then((data) => {
         activityIdOptions.value = data;
       })
@@ -1188,9 +1393,8 @@ function remoteMethodForActivityId(query:any) {
   }
 }
 
-// 更新表格的选中状态
+/** 更新表格的选中状态 */
 const updateSelectionState = () => {
-  debugger
   const selectedRows = tableData.value?.filter(row => row.isCheck);
   (queryListRef.value as any)?.toggleAllSelection(selectedRows?.map(row => row.id));
   handleSelectionChange(selectedRows? selectedRows:[]);
@@ -1201,16 +1405,25 @@ function handleSelectionChange (rows:any[]) {
   tableData.value?.forEach(row => {
         row.isCheck = 0
   });
-  selectionKeys = rows.map(item => item.serialNumber);
+
+  let selectionKeysOfModThree: any[] = rows.filter(row => (row.id % 3 === 1) && (row.fteTimeType !=='Total Demand FTE') && (row.fteTimeType !=='Total Supply FTE') && (row.fteTimeType !=='Total Resource Gap')).map(item => item.id);
+  selectionKeys = [];
+  for (let item of selectionKeysOfModThree) {
+        selectionKeys.push(item);
+        selectionKeys.push(item+1);
+        selectionKeys.push(item+2);
+  }
   selectionKeys.forEach(key => {
     tableData.value?.forEach(row => {
-      if (row.serialNumber == key) {
+      if (row.id == key) {
         row.isCheck = 1
       }
     });
   });
+
   recalculate();
   recalculateBarChart();
+  recalculateLineChart();
 }
 
 /** 设置单元格背景颜色 */
@@ -1254,48 +1467,111 @@ function recalculate(){
   });
 }
 
+/** 折线图重新计算 */
+function recalculateLineChart(){
+  lineChartData.value = {"demandList" : [],"supplyList" : [],"fteTimeList" : []};
+  if (typeof tableData.value !== 'undefined' && typeof tableData.value.length !== 'undefined'){
+    let i = 0;
+    for (let key of fieldList) {
+      if ( i >= fteTimes.value.length)  break;
+      const totalDemandFte = tableData.value
+        .filter(item => item.fteTimeType === 'Demand FTE' && item.isCheck === 1)
+        .reduce((sum, item) => sum + parseFloat(getValue(item, key)), 0);
+      const totalSupplyFte =  tableData.value
+        .filter(item => item.fteTimeType === 'Supply FTE' && item.isCheck === 1)
+        .reduce((sum, item) => sum + parseFloat(getValue(item, key)), 0);
+      lineChartData.value.demandList.push(totalDemandFte);
+      lineChartData.value.supplyList.push(totalSupplyFte);
+      i = i+1;
+    };
+    lineChartData.value.fteTimeList = [...fteTimes.value];
+  }
+
+}
 /** 柱状图重新计算 */
 function recalculateBarChart(){
   barChartData.value = {"seriesList" : [],"fteTimeList" : []};
   if (typeof tableData.value !== 'undefined' && typeof tableData.value.length !== 'undefined'){
-    const uniqueFranchiseList = uniqueByField(tableData.value, 'franchise');
-    for (let franchiseKey of uniqueFranchiseList) {
-      const demandFte: Series = {
-        name: "", // franchise + d
-        type: "bar",
-        stack:"Demand FTE",
-        emphasis:{focus: 'series'},
-        data: []
-      };
-
-      const supplyFte: Series = {
-        name: "", // franchise + s
-        type: "bar",
-        stack:"supplyFte",
-        emphasis:{focus: 'series'},
-        data: []
-      };
-      demandFte.name = (franchiseKey.franchise ? franchiseKey.franchise : '') + 'd';
-      supplyFte.name = (franchiseKey.franchise ? franchiseKey.franchise : '') + 's';
-      let i = 0;
+    // 1、汇总求和
+    const totalDemandFteList:number[] = [];
+    const totalSupplyFteList:number[] = [];
+    let monthSpan = 0;
       for (let key of fieldList) {
-        if ( i >= fteTimes.value.length)  break;
+        if ( monthSpan >= fteTimes.value.length)  break;
         const totalDemandFte = tableData.value
-          .filter(item => item.fteTimeType === 'Demand FTE' && item.isCheck === 1 && item.franchise === franchiseKey.franchise)
+          .filter(item => item.fteTimeType === 'Demand FTE' && item.isCheck === 1)
           .reduce((sum, item) => sum + parseFloat(getValue(item, key)), 0);
         const totalSupplyFte =  tableData.value
+          .filter(item => item.fteTimeType === 'Supply FTE' && item.isCheck === 1)
+          .reduce((sum, item) => sum + parseFloat(getValue(item, key)), 0);
+        totalDemandFteList.push(totalDemandFte);
+        totalSupplyFteList.push(totalSupplyFte);
+        monthSpan = monthSpan + 1;
+      };
+
+    // 2、by franchise 求和
+    const uniqueFranchiseList = uniqueByField(tableData.value, 'franchise');
+    let franchiseCount = 1;
+    for (let franchiseKey of uniqueFranchiseList) {
+      let demandFte: Series;
+      let supplyFte: Series;
+      if (uniqueFranchiseList.length === franchiseCount){
+        demandFte = {
+          name: "",
+          type: "bar",
+          stack:"Demand FTE",
+          emphasis:{focus: 'series'},
+          label: {show: true, position: 'top',formatter: function(params:any) { return totalDemandFteList[params.dataIndex] === 0 ? '' : totalDemandFteList[params.dataIndex];}},
+          data: []
+        };
+        supplyFte = {
+          name: "",
+          type: "bar",
+          stack:"supplyFte",
+          emphasis:{focus: 'series'},
+          label: {show: true, position: 'top',formatter: function(params:any) { return totalSupplyFteList[params.dataIndex] === 0 ? '' : totalSupplyFteList[params.dataIndex];}},
+          data: []
+        };
+      } else {
+        franchiseCount = franchiseCount + 1;
+        demandFte = {
+          name: "", 
+          type: "bar",
+          stack:"Demand FTE",
+          emphasis:{focus: 'series'},
+          label: {show: false},
+          data: []
+        };
+
+        supplyFte = {
+          name: "",
+          type: "bar",
+          stack:"supplyFte",
+          emphasis:{focus: 'series'},
+          label: {show: false},
+          data: []
+        };
+      }
+      demandFte.name = (franchiseKey.franchise ? franchiseKey.franchise : franchiseCount+'') ;
+      supplyFte.name = (franchiseKey.franchise ? franchiseKey.franchise : franchiseCount+'') ;
+      let monthSpan = 0;
+      for (let key of fieldList) {
+        if ( monthSpan >= fteTimes.value.length)  break;
+        const totalDemandFteByFranchise = tableData.value
+          .filter(item => item.fteTimeType === 'Demand FTE' && item.isCheck === 1 && item.franchise === franchiseKey.franchise)
+          .reduce((sum, item) => sum + parseFloat(getValue(item, key)), 0);
+        const totalSupplyFteByFranchise =  tableData.value
           .filter(item => item.fteTimeType === 'Supply FTE' && item.isCheck === 1 && item.franchise === franchiseKey.franchise)
           .reduce((sum, item) => sum + parseFloat(getValue(item, key)), 0);
-        demandFte.data.push(totalDemandFte);
-        supplyFte.data.push(totalSupplyFte);
-        i = i+1;
+        demandFte.data.push(totalDemandFteByFranchise);
+        supplyFte.data.push(totalSupplyFteByFranchise);
+        monthSpan = monthSpan+1;
       };
       barChartData.value?.seriesList.push(demandFte);
       barChartData.value?.seriesList.push(supplyFte);
     }
   } 
   barChartData.value.fteTimeList = fteTimes.value;
-  console.log("barChartData",barChartData);
 }
 
 /** 去重方法 */

@@ -1,24 +1,40 @@
 <template>
-	<div ref="storyChartDom" class="strory-chart"
-		:class="{ isAssay: assayName, horizontal: horizontal, isAllYear: yearType == 'ALL' }">
-		<div v-if="assayName" class="assayName">{{ assayName }}</div>
+	<div
+		ref="storyChartDom"
+		class="strory-chart"
+		:class="{
+			isAssay: assayName,
+			horizontal: horizontal,
+			isAllYear: yearType == 'ALL',
+			isDisabled: isDisabled,
+			isZoomActive: isZoomActive
+		}"
+	>
 		<div v-if="dotData.length" class="dot-box">
 			<div v-if="horizontal" class="horizontal" />
-			<!-- 点图 -->
+			<!-- 点图 :append-to="storyChartDom"-->
 			<template v-for="row in dotData">
-				<el-tooltip popper-class="strory-chart-tips" placement="bottom" effect="light" :append-to="storyChartDom">
-					<div class="dot-item" :class="{ isActive: row.isActive, isTBD: row.isTBD }" :dot-code="row.code" :style="getStyle(row)">
+				<el-tooltip popper-class="strory-chart-tips" placement="bottom" effect="light" :append-to="domId ? `#${domId}` : 'body'">
+					<div
+						class="dot-item"
+						:class="{
+							isActive: row.isActive,
+							isTBD: row.isTBD,
+						}"
+						:dot-code="row.code"
+						:style="getStyle(row)"
+					>
 						<div class="dot-item-desc">
 							<div class="name">{{ row.sortName || row.label }}</div>
 							<div v-if="row.date && !row.isTBD" class="date">{{ row.date }}</div>
-							<div v-if="row.isTBD">(TBD)</div>
+							<div v-if="row.isTBD" class="date">(TBD)</div>
 						</div>
 					</div>
 					<template #content>
 						<div class="tips-content">
 							<div class="name">{{ row.label }}</div>
 							<div v-if="row.date && !row.isTBD" class="date">{{ row.date }}</div>
-							<div v-if="row.isTBD">(TBD)</div>
+							<div v-if="row.isTBD" class="date">(TBD)</div>
 							<div v-if="row.linkName" class="linkname" @click="handleLink(row.linkTo)">{{ row.linkName }}</div>
 							<!-- 提示 -->
 							<div v-if="row.options && row.options.length" class="tips-box">
@@ -41,7 +57,7 @@
 		<template v-for="group in barData">
 			<div class="bar-box">
 				<template v-for="row in group">
-					<el-tooltip popper-class="strory-chart-tips" placement="bottom" effect="light" :append-to="storyChartDom">
+					<el-tooltip popper-class="strory-chart-tips" placement="bottom" effect="light" :append-to="domId ? `#${domId}` : 'body'">
 						<div class="bar-item" :class="{ isActive: row.isActive }" :style="getBarStyle(row)">
 							<div class="dot-item-desc">
 								<div class="name">{{ row.label }}</div>
@@ -94,6 +110,19 @@ const props = defineProps({
 	yearType: {
 		type: String,
 		default: ''
+	},
+	domId: {
+		type: String,
+		default: ""
+	},
+	// 是否放大active的点
+	isZoomActive: {
+		type: Boolean,
+		default: true
+	},
+	isDisabled: {
+		type: Boolean,
+		default: false
 	}
 });
 
@@ -196,7 +225,12 @@ const getOffsetAmount = (row: any, date: any) => {
 	if (props.stepConfig) {
 		const yearList = props.stepConfig.dateList
 		const width = props.stepConfig.stepWidth
-		const buffer = props.yearType == 'ALL' ? (row.isActive ? 6 : 9) : (row.isActive ? 11 : 7)
+		let buffer = 0
+		if (props.isZoomActive) {
+			buffer = row.isActive ? 8 : 6
+		} else {
+			buffer = 6
+		}
 		let yearIndex = 0
 		if (date) {
 			yearIndex = yearList.findIndex((item: any) => item === date) + 1
@@ -258,20 +292,29 @@ const handleLink = (link: any) => {
 .strory-chart {
 	border: 1px solid #fff;
 	position: relative;
-	border-bottom: 1px dashed #000;
-	&:first-child {
-		border-bottom: 1px solid #fff;
-	}
-	&.isAllYear {
+	border-bottom: 1px solid #D8DADA;
+	background: #fff;
+	margin-bottom: 5px;
+	padding: 40px 0;
+	&.isDisabled{
 		.dot-box .dot-item {
-			width: 12px;
-			height: 12px;
-
-			&.isActive {
-				width: 18px;
-				height: 18px;
+			&:not(.isActive) {
+				opacity: 0.3;
 			}
 		}
+		.bar-box .bar-item {
+			opacity: 0.3;
+		}
+	}
+	&.isZoomActive{
+		.dot-box .dot-item {
+			&.isActive {
+				width: 16px;
+				height: 16px;
+			}
+		}			
+	}
+	&.isAllYear {
 		.dot-item-desc{
 			font-size: 12px;
 			transform: scale(0.8) translateX(-50%);
@@ -280,10 +323,6 @@ const handleLink = (link: any) => {
 		.bar-box .bar-item {
 			height: 12px;
 		}
-	}
-	.linkname{
-		cursor: pointer;
-		color: #20a6fc;
 	}
 	.dot-box {
 		position: relative;
@@ -295,29 +334,25 @@ const handleLink = (link: any) => {
 			position: absolute;
 			left: 0;
 			top: 50%;
-			background: #000;
+			background: #B2B4B4;
 			transform: translateY(-50%);
 		}
 
 		.dot-item {
 			cursor: pointer;
-			width: 16px;
-			height: 16px;
+			width: 12px;
+			height: 12px;
+			border-radius: 3px;
 			position: absolute;
 			left: 0;
 			top: 50%;
 			transform: translateY(-50%);
-			border-radius: 50%;
 			z-index: 1;
-			
-			&.isActive {
-				width: 24px;
-				height: 24px;
-			}
+
 
 			&.isTBD {
-				background: #a8abb2 !important;
-				border: 1px solid #606266;
+				background: #fff !important;
+				border: 1px solid #3C4242
 			}
 		}
 	}
@@ -329,12 +364,13 @@ const handleLink = (link: any) => {
 
 		.bar-item {
 			cursor: pointer;
-			height: 18px;
+			height: 16px;
 			position: absolute;
 			left: 0;
 			top: 50%;
 			transform: translateY(-50%);
 			z-index: 1;
+			border-radius: 4px;
 		}
 	}
 	.dot-item-desc{
@@ -344,21 +380,20 @@ const handleLink = (link: any) => {
 		transform: translateX(-50%);
 		display: flex;
 		flex-direction: column;
-		font-size: 12px;
 		white-space: nowrap;
 		line-height: 1;
 		text-align: center;
+		.name{
+			font-size: 13px;
+		}
+		.date{
+			font-size: 12px;
+		}
 	}
 	&.isAssay {
-		background: #f9f9f9;
-		border-top: 1px solid #000;
-		border-bottom: 1px solid #000;
+		border-top: 1px solid #D8DADA;
+		border-bottom: 1px solid #D8DADA;
 		margin-bottom: 20px;
-		padding: 20px 0;
-	}
-
-	&.horizontal {
-		padding: 20px 0;
 	}
 
 	.assayName {
@@ -372,14 +407,31 @@ const handleLink = (link: any) => {
 <style lang="scss">
 .strory-chart-tips {
 	z-index: 9999;
-
+	padding: 0;
+	.tips-content{
+		padding: 5px 0;
+	}
+	.name,.date,.linkname{
+		padding: 0 10px;
+	}
+	.linkname{
+		cursor: pointer;
+		color: #0095FF;
+		text-decoration: underline;
+	}
+	.name{
+		font-weight: bold;
+	}
 	.tips-box {
 		margin-top: 8px;
-		border-top: 1px dashed #4a4a4a;
+		border-top: 1px solid #D9D9D9;
 		padding-top: 10px;
+		max-height: 200px;
+		overflow: auto;
+		padding: 10px 10px 0;
 	}
 	.split-line{
-		border-top: 1px dashed #4a4a4a;
+		border-top: 1px dashed #D9D9D9;
 		height: 0;
 		margin: 8px 0;
 		width: 100%;

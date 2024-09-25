@@ -17,16 +17,23 @@
 				</el-row>
 			</div>
 			<!-- 图 -->
-			<div id="storyLineDomId" class="story-line" :class="{ isFullscreen }">
+			<div id="storyLineDomId" class="story-line" :class="{ isFullscreen, isShowTree }">
 				<StoryLineChart
 					ref="storyLineChartRef"
 					title="StudyA"
 					domId="storyLineDomId"
 					:chartConfig="chartConfig"
-					class="story-line-chart common-card"
 					@handleScreenFull="(val) => isFullscreen = val"
 				/>
-				<LevelTree class="story-line-tree common-card" @checkTreeChange="checkTreeChange" />
+				<div class="story-line-tree" :class="{ 'common-card': isShowTree }">
+					<div class="common-expand-icon">
+						<el-icon v-if="isShowTree" @click="isShowTree = false"><DArrowRight /></el-icon>
+						<el-icon v-else @click="isShowTree = true"><DArrowLeft /></el-icon>
+					</div>
+					<div class="story-line-tree-scroll">
+						<LevelTree v-show="isShowTree" @checkTreeChange="checkTreeChange" />
+					</div>
+				</div>
 			</div>
 			<div class="bottom">
 				<TeamBoard />
@@ -56,6 +63,7 @@ const chartConfig = ref<Array<any>>([]);
 const isFullscreen = ref<Boolean>(false);
 const basicInfo = ref({})
 const storyLineChartRef:any = ref(null)
+const isShowTree = ref<any>(true)
 const studyName = computed(() => {
 	return route.query.studyName
 })
@@ -71,7 +79,7 @@ const selectChartData = (data: any) => {
 		const children: any[] = item.children || []
 		if (item.treeLevel == 1) {
 			const filterChildren = children.filter(f => f.isCheck)
-			const config = { horizontal: true, treeLevel: item.treeLevel, chartData: filterChildren }
+			const config = { labelName: item.label, horizontal: true, treeLevel: item.treeLevel, chartData: filterChildren }
 			chartConfig.value.push(config)
 		} else if (item.treeLevel == 2 || item.treeLevel == 3) {
 			// 泳道
@@ -79,13 +87,13 @@ const selectChartData = (data: any) => {
 				const assayChildren: any[] = child.children || []
 				const filterChildren = assayChildren.filter(f => f.isCheck)
 				if (filterChildren.length) {
-					const config = { assayName: child.label, treeLevel: item.treeLevel, chartData: filterChildren }
+					const config = { labelName: `${item.label}<br/>(${child.label})`, treeLevel: item.treeLevel, chartData: filterChildren }
 					chartConfig.value.push(config)
 				}
 			})
 		} else {
 			const filterChildren = children.filter(f => f.isCheck)
-			const config = { treeLevel: item.treeLevel, chartData: filterChildren }
+			const config = { labelName: item.label, treeLevel: item.treeLevel, chartData: filterChildren }
 			chartConfig.value.push(config)
 		}
 	})
@@ -122,26 +130,31 @@ const checkTreeChange = (data: any) => {
 		gap: 20px;
 		max-height: 1500px;
 		padding-right: 5px;
-
+    overflow: auto;
 		&.isFullscreen {
 			background: #fff;
 			max-height: max-content;
-
-			.story-line-chart {
-				padding: 20px;
+		}
+		&:not(.isShowTree){
+			.story-line-tree{
+				width: 20px;
 			}
 		}
-
-		.story-line-chart {
+		::v-deep(.story-line-chart.common-card) {
 			flex: 1;
-			padding: 15px 10px;
 			overflow-y: auto;
 		}
 
-		.story-line-tree.common-card {
-			width: auto;
-			padding: 15px 10px;
-			overflow: auto;
+		.story-line-tree {
+			width: 320px;
+			overflow: hidden;
+			position: relative;
+			padding: 0;
+			.story-line-tree-scroll{
+				height: 100%;
+				padding: 15px 10px;
+				overflow: auto;
+			}
 		}
 	}
 

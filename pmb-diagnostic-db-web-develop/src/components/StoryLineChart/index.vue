@@ -1,45 +1,62 @@
 <template>
-	<div ref="storyLineChart" class="story-line-chart">
-		<div class="story-line-header">
-			<div class="menu">
-				<!-- <el-button :class="{ isActive: isActive == 'Switch' }" @click="handleClickMenu('Switch')">One Year
-				</el-button>
-				<el-button :class="{ isActive: isActive == 'ALL' }" @click="handleClickMenu('ALL')">All Year</el-button> -->
-				<el-switch v-model="isActive" active-value="ALL" inactive-value="Switch" @change="handleClickMenu"/>
-			</div>
-			<span class="title">{{ title }}</span>
-			<div class="right-box">
-				<div class="legend-box">
-					<div class="legend" v-for="item in statusColorArr">
-						<span class="label">{{ item.label }}</span>
+	<div ref="storyLineChart" class="story-line-chart common-card" :class="{ isFullscreen: isFullscreen }">
+		<div v-if="showHeader" class="story-line-header">
+			<div class="title">{{ title }}</div>
+			<div class="operation">
+				<div class="left-box">
+					<div class="color-box" v-for="item in statusColorArr">
 						<span class="color" :style="{ background: item.color }" />
+						<span class="label">{{ item.label }}</span>
+					</div>
+					<div class="color-box" v-for="item in levelConfig">
+						<span class="color" :style="{ background: item.color }" />
+						<span class="label">{{ item.type }}</span>
 					</div>
 				</div>
-				<!--全屏 -->
-				<div v-if="!hideFullScreen" class="nav-action-item">
-					<ScreenLayout :domId="domId" @handleScreenFull="handleScreenFull" />
+				<div class="right-box">
+					<div class="flex-center">
+						<div class="swtich-text">{{ isActive == 'ALL' ? 'All year' : 'One Year' }}</div>
+						<el-switch v-model="isActive" active-value="ALL" inactive-value="Switch" @change="handleClickMenu(isActive)" />
+					</div>
+					<!--全屏 -->
+					<ScreenLayout v-if="!hideFullScreen" :domId="domId" @handleScreenFull="handleScreenFull" />
 				</div>
 			</div>
 		</div>
 		<div class="chart-layout">
-			<el-icon v-if="isActive == 'Switch'" class="leftbtn" @click="handleScrollLeft">
+			<el-icon v-if="isActive == 'Switch' && showCarouselButton" class="leftbtn" @click="handleScrollLeft">
 				<ArrowLeftBold />
 			</el-icon>
-			<el-icon v-if="isActive == 'Switch'" class="rightbtn" @click="handleScrollRight">
+			<el-icon v-if="isActive == 'Switch' && showCarouselButton" class="rightbtn" @click="handleScrollRight">
 				<ArrowRightBold />
 			</el-icon>
 			<div ref="storyLineScroll" class="story-line-scroll" :class="{ isAll: isActive == 'ALL' }">
 				<div class="story-line-content" :style="{ width: stepConfig.boxWidth ? `${stepConfig.boxWidth}px` : '' }">
 					<div class="time-axis-menu">
-
 						<TimeAxis :yearType="isActive" :stepConfig="stepConfig" :yearList="currentYearList" />
-
 					</div>
 					<div v-if="showChart" class="story-chart-box">
-						<template v-for="(config, index) in chartConfig">
-							<StroryChart v-if="Array.isArray(config.chartData) && config.chartData.length" class="story-chart-item" 
-								:stepConfig="stepConfig" :yearType="isActive" :config="config" />
+						<template v-if="chartConfig.length">
+							<div v-for="(config, index) in chartConfig" class="story-chart-item">
+								<div	
+									v-if="Array.isArray(config.chartData) && config.chartData.length"
+									class="labelName"
+									v-html="config.labelName"
+								/>
+								<StroryChart
+									v-if="Array.isArray(config.chartData) && config.chartData.length"
+									:stepConfig="stepConfig"
+									:yearType="isActive"
+									:config="config"
+									:domId="domId"
+									:isZoomActive="isZoomActive"
+									:isDisabled="isDisabled"
+								/>
+							</div>
 						</template>
+						<div class="no-chart-data" v-else>
+							no data
+						</div>
 					</div>
 				</div>
 			</div>
@@ -52,7 +69,7 @@ import TimeAxis from './TimeAxis.vue'
 import StroryChart from './StroryChart.vue'
 import ScreenLayout from '@/components/ScreenLayout.vue'
 import { ref, onMounted, onUnmounted } from "vue";
-import { statusColorArr } from './common'
+import { statusColorArr, levelConfig } from './common'
 interface Years {
 	year: string | number;
 	month: string | number;
@@ -72,9 +89,31 @@ const props = defineProps({
 		type: String,
 		default: ""
 	},
+	// disabled高亮时是否置灰其他点
+	activeType: {
+		type: String,
+		default: ""
+	},
+	isDisabled: {
+		type: Boolean,
+		default: false
+	},
 	hideFullScreen: {
 		type: Boolean,
 		default: false
+	},
+	// 是否放大active的点
+	isZoomActive: {
+		type: Boolean,
+		default: true
+	},
+	showHeader: {
+		type: Boolean,
+		default: true
+	},
+	showCarouselButton: {
+		type: Boolean,
+		default: true
 	}
 });
 const emits = defineEmits(['handleScreenFull', 'handleResize', 'handleClickMenu', 'handleScrollRight', 'handleScrollLeft'])
@@ -133,6 +172,7 @@ const handleResize = () => {
  * 切换时间轴类型
  */
 const handleClickMenu: any = (val: string) => {
+	isActive.value = val
 	emits('handleClickMenu', val)
 	init()
 }
@@ -217,7 +257,7 @@ const calculationStepWidth = () => {
 	})
 	if (storyLineChart.value) {
 		const width = storyLineChart.value.getBoundingClientRect().width
-		const padding = isFullscreen.value ? 40 : 20
+		const padding = 0 // isFullscreen.value ? 42 : 22
 		if (isActive.value == 'Switch') {
 			stepConfig.boxWidth = ((width - padding) * yearCount)
 			stepConfig.groupWidth = `${width - padding}`
@@ -255,28 +295,23 @@ const handleScreenFull = (val: any) => {
 	})
 }
 
-const handleWheel = (event: any) => {
-	console.log(event)
-  // 阻止滚动事件
-  event.preventDefault();
-};
-
-const handleScrollLeft: any = (isLeft:any, moveVal:any) => {
-	let width = -(storyLineScroll.value.scrollWidth / yearCount)
-	const isMax = typeof isLeft == 'boolean' && isLeft
+const handleScrollLeft: any = () => {
+	const width = storyLineScroll.value.scrollWidth / yearCount
+	const scrollLeft = storyLineScroll.value.scrollLeft
+	let move = scrollLeft - width
 	// 解决多余留白问题
 	scrollCount.value = (scrollCount.value - 1) > 0 ? scrollCount.value - 1 : 1
 	if (scrollCount.value == 1) {
-		width = -99999
+		move = 0
 	}
-	emits('handleScrollLeft', width)
-	storyLineScroll.value.scrollBy({
-		left: moveVal || width, // 滚动的距离，根据需要调整
+	storyLineScroll.value.scrollTo({
+		left: move, // 滚动的距离，根据需要调整
 		behavior: 'smooth' // 平滑滚动
 	});
+	emits('handleScrollLeft', move)
 }
 
-const handleScrollRight:any = (isRight: any, moveVal: any) => {
+const handleScrollRight:any = (isRight: any) => {
 	const left = storyLineScroll.value.scrollLeft
 	const width = storyLineScroll.value.scrollWidth / yearCount
 	let move = Number(left) + Number(width)
@@ -291,160 +326,47 @@ const handleScrollRight:any = (isRight: any, moveVal: any) => {
 			move = 99999
 		}
 	}
-	emits('handleScrollRight', move)
-	storyLineScroll.value.scrollBy({
-		left: moveVal || move, // 滚动的距离，根据需要调整
+	storyLineScroll.value.scrollTo({
+		left: move, // 滚动的距离，根据需要调整
 		behavior: isMax ? 'auto' : 'smooth' // 平滑滚动
 	});
+	emits('handleScrollRight', move)
+}
+
+const handleDateScroll = (time: any) => {
+	// const year
+	// storyLineScroll.value.scrollTo({
+	// 	left: move,
+	// 	behavior: 'smooth' // 平滑滚动
+	// });
+}
+
+const handleScroll = (move: any, isInit?: boolean) => {
+	if (isInit) {
+		storyLineScroll.value.scrollTo({
+			left: 0,
+			behavior: 'auto' // 平滑滚动
+		});
+	}
+	nextTick(() => {
+		storyLineScroll.value.scrollTo({
+			left: move,
+			behavior: 'smooth' // 平滑滚动
+		});
+	})
 }
 const handleLink = (link: any) => {
 	window.open(link)
 }
 defineExpose({
 	handleResize,
+	handleScroll,
+	handleDateScroll,
 	handleClickMenu,
 	handleScrollRight,
 	handleScrollLeft
 })
 </script>
 <style lang="scss" scoped>
-.story-line-chart {
-	display: flex;
-	flex-direction: column;
-	overflow-x: hidden;
-	.story-line-header {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-		margin-bottom: 10px;
-
-		.menu {
-			flex: 1;
-			font-size: 12px;
-			display: flex;
-			align-items: center;
-
-			.el-button {
-				border: 1px solid #dcdfe6;
-				border-radius: 0;
-				margin: 0;
-				height: 28px;
-				font-size: 12px;
-
-				&.isActive {
-					background: #20a6fc;
-					color: #fff;
-				}
-
-				&:first-child {
-					border-right: none;
-				}
-			}
-
-			span {
-				cursor: pointer;
-			}
-
-		}
-
-		.title {
-			font-size: 16px;
-			font-weight: bold;
-			text-align: center;
-			flex: 1;
-		}
-
-		.right-box {
-			flex: 1;
-			display: flex;
-			align-items: center;
-			justify-content: flex-end;
-
-			.legend-box {
-				display: flex;
-				align-items: center;
-				margin-right: 20px;
-			}
-
-			.legend {
-				display: flex;
-				align-items: center;
-				font-size: 12px;
-				gap: 5px;
-				margin-right: 5px;
-				white-space: nowrap;
-				.color {
-					width: 30px;
-					height: 12px;
-				}
-			}
-		}
-	}
-
-	.unit {
-		margin: 5px 0;
-		font-size: 12px;
-		color: red;
-	}
-
-	.time-axis-menu {
-		position: relative;
-
-	}
-
-	.chart-layout {
-		position: relative;
-		flex: 1;
-		border: 1px solid #000;
-		.leftbtn,
-		.rightbtn {
-			cursor: pointer;
-			height: 42px;
-			width: 20px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			background: rgba(0, 0, 0, 0.5);
-			position: absolute;
-			top: 0;
-			z-index: 1;
-		}
-
-		.leftbtn {
-			left: 0;
-		}
-
-		.rightbtn {
-			right: 0;
-		}
-	}
-
-	.story-line-scroll {
-		padding-bottom: 20px;
-		overflow: auto;
-		position: relative;
-		height: 100%;
-		.story-line-content{
-			height: 100%;
-			overflow: hidden;
-		}
-		&.isAll {
-			overflow: initial;
-			.story-line-content{
-				overflow: initial;
-			}
-		}
-
-		&::-webkit-scrollbar {
-			width: 0;
-			/* 设置滚动条的宽度 */
-			height: 0;
-		}
-	}
-
-	.story-chart-box {
-		display: flex;
-		flex-direction: column;
-	}
-}
+@import './scss/index.scss';
 </style>

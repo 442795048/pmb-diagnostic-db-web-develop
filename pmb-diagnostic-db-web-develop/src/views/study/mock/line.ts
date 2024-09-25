@@ -368,3 +368,46 @@ export const MOCK_TREE2 = [
     ]
   }
 ]
+
+
+
+export const MOCK_TREE6 = {
+	level1Datas: [
+		{ label: 'Pre-PH3ID' },
+		{ label: 'LSPC' },
+		{ label: 'CSP Available' },
+		{ label: 'HGR initial submission' },
+		{ label: 'HGR initial approval' },
+		{ label: 'FSI' },
+		{ label: 'LSI' },
+		{ label: 'NDA-S' },
+		{ label: 'NDA-A' }
+	],
+	level2Datas: [
+		{ label: 'Assay selection' },
+		{ label: 'Lab selection' },
+		{ label: 'Lab readiness' },
+		{ label: 'FST' },
+		{ label: 'LST' },
+		{ label: 'Data Recon Completion' },
+		{ label: 'DCO' },
+		{ label: 'DBL' },
+	],
+	level3Datas: [
+		{ label: 'CDx Assay selection date' },
+		{ label: 'CDx Contract date' },
+		{ label: 'AV completion date' },
+		{ label: 'Type testing completion date' },
+		{ label: 'CDx HGR Approval Date' },
+		{ label: 'Ring study & Reader precision date' },
+		{ label: 'Clinical IVD trial completion date' },
+		{ label: 'CDx Lab readiness date' },
+		{ label: 'Bridging study initiation date' },
+		{ label: 'Bridging study completion date' },
+		{ label: 'CDx submission date' },
+		{ label: 'CDx approval date' }
+	],
+	level4Datas: [],
+	level5Datas: [],
+	level6Datas: []
+}

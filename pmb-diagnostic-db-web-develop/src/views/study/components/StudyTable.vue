@@ -192,7 +192,7 @@
             style="width: 100px;height: 22px;background-color: #003865;" @click="handleNew">
             New
           </el-button>
-          <el-button round class="common-button" style="width: 100px;height: 22px;" @click="handleCompare">
+          <el-button round class="common-button" style="width: 100px;height: 22px;" :disabled="multipleSelection.length < 2" @click="handleCompare">
             Compare
           </el-button>
         </div>
@@ -538,7 +538,14 @@ const hideAssayNameDropdown = () => {
 
 const handleCompare = () => {
   // console.log("submit!");
-  router.push("/study/compare");
+	console.log(multipleSelection.value)
+	const studyNames = multipleSelection.value.map((item: any) => item.studyName)
+  router.push({
+		path: "/study/compare",
+		query: {
+			studyNames: studyNames.join(',')
+		}
+	});
 };
 const handleNew = () => {
   router.push("/study/new");
