@@ -19,6 +19,10 @@
 .el-select .el-select__wrapper{
 	min-height: 30px;
 }
+.el-select--small .el-select__wrapper {
+  min-height: 30px!important;
+  line-height: 30px!important;
+}
 .el-dialog__header{
 	border-bottom: 1px solid #ccc;
 }
