@@ -11,6 +11,7 @@
 						:showMarkLine="showMarkLine"
 						:markLineId="markLineId"
 						:chartList="chartList"
+						:durationType="durationType"
 						:isDisabled="disabledStoryLine"
 						:isZoomActive="false"
 					/>
@@ -45,17 +46,16 @@ import LevelTree from './LevelTree/index.vue'
 import { ref, onMounted, computed } from "vue";
 import { useRoute } from 'vue-router';
 import CompareAPI from "@/api/compare";
+import { levelConfig } from '@/components/StoryLineChart/common'
 import { sortNameConfig } from '@/views/study/common/line'
 import { getSpecifyMonths } from '@/utils/date'
-import { statusColorArr, levelConfig } from '@/components/StoryLineChart/common'
-import ScreenLayout from '@/components/ScreenLayout.vue'
 const route = useRoute();
 
 const defaultChartList = ref<any>([])
 const chartList = ref<any>([])
 const compareTitle = ref('')
 const storyLineChartRef: any = ref(null)
-const isFullscreen = ref(false)
+const durationType = ref('')
 const markLineId = ref('')
 const showMarkLine = ref(false)
 const isShowTree = ref<any>(true)
@@ -412,14 +412,21 @@ const getWarningLine = () => {
 	setTimeout(() => {
 		const selectChild = selectTreeData.value.filter((fi: any) => fi.isChild)
 		if (selectChild.length > 1) {
-			// 查找第一个高亮的code
-			const flattenData = getFlattenData()
-			let firstActive = flattenData.find((fi: any) => fi.isActive)
-			// 控制告警线的位置
-			markLineId.value = firstActive?.label
-			if (markLineId.value) {
-				showMarkLine.value = true
-			}
+			// 判断选中点是否跨轴选中
+			const levelArr = selectChild.map((item: any) => item.treeLevel)
+			const isRepeat = Array.from(new Set(levelArr)).length == 1
+			durationType.value = isRepeat ? '' : 'every'
+			nextTick(() => {
+				// 查找第一个高亮的code
+				const flattenData = getFlattenData()
+				// let firstActive = flattenData.find((fi: any) => fi.isActive && !fi.isTBD)
+				let firstActive = flattenData.find((fi: any) => fi.isActive)
+				// 控制告警线的位置
+				markLineId.value = firstActive?.label
+				if (markLineId.value) {
+					showMarkLine.value = true
+				}
+			})
 		}
 	})
 	
