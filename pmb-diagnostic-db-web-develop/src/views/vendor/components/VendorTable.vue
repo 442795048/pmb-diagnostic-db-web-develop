@@ -382,10 +382,10 @@
               type="primary"
               link
               size="small"
-              @click.stop="handleEditClick(scope.row.studyName)"
+              @click.stop="handleEditClick(scope.row.vendorName)"
               style="font-size: 12px"
             >
-              view
+              <el-icon><View /></el-icon>
             </el-button>
           </template>
         </el-table-column>
@@ -438,7 +438,8 @@ const queryParams = reactive<VendorTableQuery>({
   oddStatus: "",
   tddStatus: "",
   studyName: "",
-  ctaCdx: "",
+  cta: "",
+  cdx: "",
   assayName: "",
   issueStartDate: "",
   issueEndDate: "",
@@ -555,7 +556,8 @@ function handleResetQuery() {
     (queryParams.oddStatus = ""),
     (queryParams.tddStatus = ""),
     (queryParams.studyName = ""),
-    (queryParams.ctaCdx = ""),
+    (queryParams.cta = ""),
+    (queryParams.cdx = ""),
     (queryParams.assayName = ""),
     (queryParams.issueStartDate = ""),
     (queryParams.issueEndDate = ""),
@@ -577,11 +579,11 @@ const hideStudyDropdown = () => {
   }, 200); // 延迟200毫秒隐藏下拉列表
 };
 
-function handleEditClick(studyName: string) {
+function handleEditClick(vendorName: string) {
   router.push({
-    path: "/study/line",
+    path: "/vendor/vendor-view",
     query: {
-      studyName,
+      vendorName,
     },
   });
 }
@@ -593,8 +595,7 @@ const handleSelect = (item: string) => {
   console.log(item);
 };
 
-onBeforeMount(() => {
-});
+onBeforeMount(() => {});
 
 watchEffect(() => {
   if (props.vendors) {

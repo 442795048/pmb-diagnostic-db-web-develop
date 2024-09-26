@@ -29,29 +29,33 @@
               @handle-list="handleList"
               @handle-total="handleTotal"
               title="Vendor"
-              :type="'vender'"
+              :type="'vendor'"
               :isLink="true"
               :count-num="totalVendor"
               style="flex: 1"
             />
-            <StaticsImages
-              @handle-list="handleList"
-              @handle-total="handleTotal"
-              :title="'ODD/TDD ' + new Date().getFullYear()"
+            <StaticsImages2Number
+              @handleList="handleList"
+              @handleTotal="handleTotal"
+              :title="'ODD/TDD'"
               :isLink="true"
-              :type="'oddAndTdd'"
-              :count-num="totalOdd+ '/' + totalTdd"
+              :planType="'odd'"
+              :achieveType="'tdd'"
+              :plan-count-num="totalOdd"
+              :achieve-count-num="totalTdd"
               style="flex: 1"
             />
-            <StaticsImages
-              @handle-list="handleList"
-              @handle-total="handleTotal"
+            <StaticsImages2Number
+              @handleList="handleList"
+              @handleTotal="handleTotal"
               :title="
                 'Planned / Completed visits in ' + new Date().getFullYear()
               "
               :isLink="true"
-              :type="'currentVisits'"
-              :count-num="totalCurrentVisits"
+              :planType="'planned'"
+              :achieveType="'completed'"
+              :plan-count-num="totalPlanned"
+              :achieve-count-num="totalCompleted"
               style="flex: 1"
             />
           </div>
@@ -85,7 +89,8 @@ const totalTdxVendor = ref(0);
 const totalVendor = ref(0);
 const totalOdd = ref(0);
 const totalTdd = ref(0);
-const totalCurrentVisits = ref(0);
+const totalPlanned = ref(0);
+const totalCompleted = ref(0);
 
 const vendors = ref<VendorList[]>();
 const total = ref<number>();
@@ -99,10 +104,11 @@ const loadVendorStatsData = async () => {
     .then((data) => {
       totalMdxVendor.value = data.mdxVendor;
       totalTdxVendor.value = data.tdxVendor;
-      totalVendor.value = data.vender;
+      totalVendor.value = data.vendor;
       totalOdd.value = data.odd;
       totalTdd.value = data.tdd;
-      totalCurrentVisits.value = data.currentVisits;
+      totalPlanned.value = data.planned || 0;
+      totalCompleted.value = data.completed || 0;
     })
     .finally(() => {});
 };
