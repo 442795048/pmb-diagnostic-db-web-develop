@@ -1,92 +1,146 @@
 <template>
 	<div class="custom-tree-container">
 		<!-- <p>Using scoped slot</p> -->
-		<el-tree ref="elTreeDom" style="max-width: 600px" :data="dataSource" show-checkbox node-key="code" default-expand-all
-			:expand-on-click-node="false" :default-checked-keys="defaultCheckedKeys" @check-change="checkTreeChange">
+		<el-tree ref="elTreeDom" style="max-width: 600px" :data="treeData" show-checkbox node-key="code" default-expand-all
+			:expand-on-click-node="false" @check-change="checkTreeChange">
 			<template #default="{ node, data }">
-				<span class="custom-tree-node">
-					<span>{{ node.label }}</span>
-				</span>
+				<span class="custom-tree-node" :title="node.label">{{ node.label }}</span>
 			</template>
 		</el-tree>
 	</div>
 </template>
 
 <script lang="ts" setup>
-import { ref, computed, watchEffect } from "vue";
-import { MOCK_TREE1 } from '../../mock/line'
-import type Node from "element-plus/es/components/tree/src/model/node";
-// 定义树形结构
-interface Tree {
-	code: string;
-	label: string;
-	date?: string;
-	type?: string;
-	color?: string;
-	isActive?: boolean;
-	assayName?: string;
-	isAssay?: boolean,
-	startDate?: string,
-	endDate?: string,
-	children?: Tree[];
-}
-
-const defaultCheckedKeys = computed(() => {
-	// 默认选中level1的所有节点
-	return []
-})
-
+import { ref, onMounted } from "vue";
+import { levelConfig } from '@/components/StoryLineChart/common'
+import CompareAPI from "@/api/compare";
 const emits = defineEmits(['checkTreeChange']);
-const dataSource = ref<Tree[]>(MOCK_TREE1);
-const elTreeDom = ref(null)
-const currentData = reactive({
-	title: '',
-	disabled: false,
-	node: {},
-	formData: {}	
+const treeData = ref<any>([]);
+const elTreeDom = ref<any>(null)
+onMounted(() => {
+	initTree()
 })
 
 /**
- * 查找根节点
+ * 初始化树结构
  */
-const searchParentNode = (node) => {
-	if (node.level == 1) {
-		return node 
-	} else {
-		return searchParentNode(node.parent)
+const initTree = () => {
+	treeData.value = []
+	return CompareAPI.getCompareTreeInfo().then((data)=>{
+		const result: any = data || {}
+		const { level1Datas, level2Datas, level3Datas } = result
+		// level1
+		const treeRow1 = getTreeRow(level1Datas, 1)
+		const levelConfig1: any = levelConfig.find((fi: any) => fi.type == 'level1')
+		treeData.value.push({
+			disabled: true,
+			...levelConfig1,
+			...treeRow1,
+		})
+		// level2
+		const treeRow2 = getTreeRow(level2Datas, 2)
+		const levelConfig2: any = levelConfig.find((fi: any) => fi.type == 'level2')
+		treeData.value.push({
+			disabled: true,
+			...levelConfig2,
+			...treeRow2,
+		})
+		// level3
+		const treeRow3 = getTreeRow(level3Datas, 3)
+		const levelConfig3: any = levelConfig.find((fi: any) => fi.type == 'level3')
+		treeData.value.push({
+			disabled: true,
+			...levelConfig3,
+			...treeRow3,
+		})
+		// level4
+		const levelConfig4: any = levelConfig.find((fi: any) => fi.type == 'level4')
+		treeData.value.push({
+			...levelConfig4
+		})
+		// level5
+		const levelConfi5: any = levelConfig.find((fi: any) => fi.type == 'level5')
+		treeData.value.push({
+			...levelConfi5
+		})
+		// level6
+		const levelConfi6: any = levelConfig.find((fi: any) => fi.type == 'level6')
+		treeData.value.push({
+			...levelConfi6
+		})
+	})
+}
+/**
+ * 获取正常类型数据
+ */
+ const getTreeRow = (data:Array<any>, level: number) => {
+	return {
+		treeLevel: level,
+		children: (data || []).map((item: any) => {
+			return { 
+				...item,
+				isChild: true,
+				treeLevel: level,
+				label: item.name,
+				code: `${item.name}_${getRandomKey()}`,
+			}
+		})
 	}
+}
+
+/**
+ * 获取随机id
+ */
+const getRandomKey = () => {
+	return Math.random().toString(36).substring(2, 15);
 }
 
 /**
  * 节点选中
  */
-const checkTreeChange = (data, flag) => {
-	if (data) {
-		data.isCheck = flag
-		// TODO
-		const arr = ['activity1', 'activity2', 'activity3', 'activity4']
-		if (arr.includes(data.code)) {
-			console.log(dataSource.value[data.gl.i])
-			dataSource.value[data.gl.i].children[data.gl.j].children[data.gl.k].isCheck = flag
-		}
+const checkTreeChange = (data?: any, flag?: any) => {
+	// if (data.isChild || data.only) {
+	// 	data.isCheck = flag
+	// }
+	// 只能选择两个子节点，选择后其余置灰
+	const selectData = elTreeDom.value.getCheckedNodes()
+	const selectDataCode = selectData.filter((item: any) => item.isChild).map((item: any) => item.code)
+	if (selectDataCode.length == 2) {
+		disabledSelectData(selectDataCode, true)
+	} else {
+		disabledSelectData(selectDataCode, false)
 	}
-	emits('checkTreeChange', elTreeDom.value.getCheckedNodes())
+	emits('checkTreeChange', selectData)
 }
-
-
-watch(defaultCheckedKeys, (val) => {
-	if (val.length) {
-		checkTreeChange()
-	}
-}, { deep: true, immediate: true })
+/**
+ * 是否置灰其他节点
+ * @param selectDataCode 
+ * @param flag 
+ */
+const disabledSelectData = (selectDataCode: any, flag: boolean) => {
+	treeData.value.forEach((item: any) => {
+		const children = item.children || []
+		children.forEach((child: any) => {
+			if (flag) {
+				if (selectDataCode.includes(child.code)) {
+					child.disabled = false
+				} else {
+					child.disabled = true
+				}
+			} else {
+				child.disabled = false
+			}
+		})
+	})
+}
 </script>
 
 <style lang="scss" scoped>
 .custom-tree-node {
-	display: flex;
-	flex: 1;
-	align-items: center;
-	justify-content: space-between;
+	white-space: nowrap;
+	text-overflow: ellipsis;
+	overflow: hidden;
+	width: 100%;
 	padding-right: 8px;
 	font-size: 14px;
 
@@ -97,11 +151,4 @@ watch(defaultCheckedKeys, (val) => {
 	
 }
 
-</style>
-<style lang="scss">
-.custom-tree-container{
-	.el-tree-node[aria-disabled=true]{
-		display: none;
-	}
-}
 </style>

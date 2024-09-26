@@ -3,22 +3,22 @@ import request from "@/utils/request";
 const STAFF_BASE_URL = "/api/v2/staff";
 
 class FteMgtAPI {
-    /**
+  /**
    * 获取FteMgt Report
    *
    * @param queryParams 查询参数
    * @returns FteMgt明细列表
    */
-    static listFteMgts(queryParams: FteMgtQuery) {
-      return request<any, FteMgtReportVO>({
-        url: `${STAFF_BASE_URL}/listFteMgts`,
-        method: "get",
-        params: queryParams,
-      });
-    }
+  static listFteMgts(queryParams: FteMgtQuery) {
+    return request<any, FteMgtReportVO>({
+      url: `${STAFF_BASE_URL}/listFteMgts`,
+      method: "get",
+      params: queryParams,
+    });
+  }
 
   /**
-   * 修改表单数据
+   * 修改主数据
    *
    * @param spcrmId FteMgtID
    * @param data 表单数据
@@ -32,11 +32,11 @@ class FteMgtAPI {
   }
 
   /**
-   * 添加表单数据
+   * 添加主数据
    *
    * @param data 表单数据
    */
-    static add(data: FteMgtForm) {
+    static addMain(data: FteMgtForm) {
       return request({
         url: `${STAFF_BASE_URL}/addMain`,
         method: "post",
@@ -45,10 +45,10 @@ class FteMgtAPI {
   }
 
     /**
-   * 获取角色表单数据
+   * 获取主数据
    *
-   * @param id 角色ID
-   * @returns 角色表单数据
+   * @param id ID
+   * @returns 表单数据
    */
     static getFormData(id: number) {
       return request<any, FteMgtForm>({
@@ -121,6 +121,18 @@ class FteMgtAPI {
     });
   }
 
+  /**
+   * 获取提示词
+   *
+   * @returns Tip
+   */
+  static getFteMonthTip() {
+    return request<any, FteMonthTipVO>({
+      url: `${STAFF_BASE_URL}/getFteMonthTip`,
+      method: "get",
+    });
+  }
+
 }
 
 export default FteMgtAPI;
@@ -168,6 +180,8 @@ export interface FteMgtReportVO {
   fteMgtList?: FteMgtVO[];
   fteTimeHeaderList?: string[];
   totalRowId?:number;
+  currentfield?:number;
+	endfield?:number;	
 }
 
 /**
@@ -200,6 +214,19 @@ export interface FteMgtVO {
   fteTime11?: string;
   fteTime12?: string;
   fteTime13?: string;
+  fteTime14?: string;
+  fteTime15?: string;
+  fteTime16?: string;
+  fteTime17?: string;
+  fteTime18?: string;
+  fteTime19?: string;
+  fteTime20?: string;
+  fteTime21?: string;
+  fteTime22?: string;
+  fteTime23?: string;
+  fteTime24?: string;
+  fteTime25?: string;
+  fteTime26?: string;
   fteTimeName?: string;
   originalValue?: string;
   status?: string;
@@ -231,10 +258,25 @@ export interface Series {
   type:string;
   stack:string;
   emphasis:Emphasis;
+  label:Label;
   data:number[];
 };
 
 export interface Emphasis {
   focus:string;
 };
+
+export interface Label {
+  show?:boolean;
+  position?:string;
+  formatter?: Function;
+};
+
+/**  Tip对象 */
+export interface FteMonthTipVO {
+  currentMonth?:string;
+  endMonth?:string;
+  tip?:string;
+};
+
   

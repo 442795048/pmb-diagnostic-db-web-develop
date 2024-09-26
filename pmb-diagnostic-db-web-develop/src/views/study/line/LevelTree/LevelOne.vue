@@ -174,6 +174,7 @@ onMounted(() => {
  */
 const initFormData = () => {
 	Object.assign(basicFormData, props.formData)
+	getSubmissionAppDate()
 }
 
 /**
@@ -223,26 +224,29 @@ const getMaxDate = (dateArr: any) => {
 	}
 	return ''
 }
+const getSubmissionAppDate = () => {
+	const studyLevel4 = props.allFormData.studyLevel4 || []
+	const hgrInitialSubmission: any = []
+	const hgrInitialApproval: any  = []
+	studyLevel4.forEach((item: any) => {
+		if(item.hgrType == 'HGR initial submission') {
+			if(item.hgrSubmissionDate) {
+				hgrInitialSubmission.push(item.hgrSubmissionDate)
+			}
+			if(item.hgrApprovalDate) {
+				hgrInitialApproval.push(item.hgrApprovalDate)
+			}
+		}
+	})
+	const maxSubmissionDate = getMaxDate(hgrInitialSubmission)
+	const maxApprovalDate = getMaxDate(hgrInitialApproval)
+	basicFormData.hgrInitialSubmission = maxSubmissionDate
+	basicFormData.hgrInitialApproval = maxApprovalDate
+}
 
 watchEffect(() => {
   if (props.allFormData) {
-		const studyLevel4 = props.allFormData.studyLevel4 || []
-		const hgrInitialSubmission: any = []
-		const hgrInitialApproval: any  = []
-		studyLevel4.forEach((item: any) => {
-			if(item.hgrType == 'HGR initial submission') {
-				if(item.hgrSubmissionDate) {
-					hgrInitialSubmission.push(item.hgrSubmissionDate)
-				}
-				if(item.hgrApprovalDate) {
-					hgrInitialApproval.push(item.hgrApprovalDate)
-				}
-			}
-		})
-		const maxSubmissionDate = getMaxDate(hgrInitialSubmission)
-		const maxApprovalDate = getMaxDate(hgrInitialApproval)
-		basicFormData.hgrInitialSubmission = maxSubmissionDate
-		basicFormData.hgrInitialApproval = maxApprovalDate
+		getSubmissionAppDate()
   }
 })
 

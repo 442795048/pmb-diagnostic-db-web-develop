@@ -7,6 +7,7 @@ export {}
 
 declare module "vue" {
   export interface GlobalComponents {
+		MySelect: (typeof import("./../components/MySelect/index.vue"))["default"];
     AppLink: (typeof import("./../components/AppLink/index.vue"))["default"];
     AppMain: (typeof import("./../layout/components/AppMain/index.vue"))["default"];
     VisitTrend: (typeof import("./../views/dashboard/components/VisitTrend.vue"))["default"];

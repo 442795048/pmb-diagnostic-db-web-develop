@@ -14,7 +14,7 @@
 }
 
 .el-card__body {
-  --el-card-padding: 30px 50px;
+  --el-card-padding: 25px 20px;
 }
 .el-select .el-select__wrapper{
 	min-height: 30px;
@@ -46,5 +46,14 @@
 	width: 100%;
 	.el-input__inner{
 		text-align: left;
+	}
+}
+
+.el-switch{
+	.el-switch__core{
+		border: 1px solid #8A8E8E!important;
+	}
+	.el-switch__core .el-switch__action{
+		background: #830051;
 	}
 }

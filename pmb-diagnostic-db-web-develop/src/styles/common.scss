@@ -9,10 +9,9 @@ $text-color: #4a4a4a;
 
 .common-card {
   padding: 20px 30px;
-  border-radius: 4px;
+  border-radius: 16px;
   background-color: #fff;
-  border: 1px solid #e4e7ed;
-  box-shadow: 0px 0px 12px rgba(0,0,0,0.12);
+	border: 1px solid #B2B4B4
 }
 
 .common-table.el-table{
@@ -71,9 +70,34 @@ $text-color: #4a4a4a;
 
 ::-webkit-scrollbar {
   width: 4px; /* 设置滚动条的宽度 */
+	height: 4px;
 }
 
 ::-webkit-scrollbar-thumb {
   background-color: #20a6fc; /* 滑块的背景色 */
   border-radius: 5px; /* 滑块的圆角 */
+}
+
+.flex-center{
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 5px;
+}
+
+.common-expand-icon{
+	cursor: pointer;
+	width: 20px;
+	padding: 10px 0;
+	background: #830051;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	border-radius: 4px;
+	position: absolute;
+	top: 50%;
+	transform: translateY(-50%);
+	left: 0;
+	z-index: 9;
 }

@@ -49,10 +49,10 @@ const loading = ref(false);
 const hgrSubmissionDate = ref('')
 const hgrApproveDate = ref('')
 
-const wpCount = ref(1)
+const wpCount = ref(0)
 const wps = ref([])
 const cdx = ref([])
-const cdxCount = ref(1)
+const cdxCount = ref(0)
 const studyName = ref('')
 const handleCount = (val) => {
   wpCount.value = val
@@ -123,6 +123,9 @@ function handleInsert() {
     .then((data) => {
       if(data) {
         ElMessage.success('save success');
+        setTimeout(() => {
+          BackToStudy()
+        }, 2000);
       } else {
         ElMessage.error('study name repeat');
       }

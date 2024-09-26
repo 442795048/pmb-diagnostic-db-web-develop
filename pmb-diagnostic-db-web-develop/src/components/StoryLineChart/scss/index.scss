@@ -1,0 +1,127 @@
+.story-line-chart {
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	padding: 0;
+	height: 100%;
+	background: #F4F4F4;
+	padding-bottom: 20px;
+	.story-line-header{
+		padding: 15px 10px 5px;
+		background: #F4F4F4;
+		.title{
+			font-size: 18px;
+			color: #3C4242;
+			font-weight: bold;
+			text-align: center;
+			margin-bottom: 10px;
+		}
+		.operation{
+			display: flex;
+			justify-content: space-between;
+			.left-box, .right-box{
+				display: flex;
+				align-items: center;
+				flex-wrap: wrap;
+				gap: 10px;
+			}
+			.color-box {
+				display: flex;
+				align-items: center;
+				font-size: 12px;
+				gap: 5px;
+				margin-right: 5px;
+				white-space: nowrap;
+				.color {
+					width: 12px;
+					height: 12px;
+					border-radius: 4px;
+				}
+			}
+			.swtich-text{
+				color: #830051;
+				font-size: 12px;
+				white-space: nowrap;
+			}
+		}
+	}
+	.chart-layout-scroll{
+		flex: 1;
+		overflow-y: auto;
+		overflow-x: hidden;
+	}
+	.chart-layout {
+		position: relative;
+		// border: 1px solid #000;
+		&.isAllYear{
+			.chart-layout-content{
+				transition: none;
+			}
+		}
+		.leftbtn,
+		.rightbtn {
+			cursor: pointer;
+			height: 50px;
+			width: 25px;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			background: #830051;
+			color: #fff;
+			position: absolute;
+			top: 0;
+			z-index: 2;
+			font-size: 12px;
+		}
+
+		.leftbtn {
+			left: 0;
+		}
+
+		.rightbtn {
+			right: 0;
+		}
+		.chart-layout-content{
+			position: absolute;
+			left: 0;
+			top: 0;
+			transition: left 0.2s ease-in-out;
+			background: #830051;
+			.chart-layout-box{
+				margin-bottom: 10px;
+				position: relative;
+				left: 0;
+				&:last-child{
+					margin-bottom: 0;
+				}
+			}
+		}
+	}
+	.no-chart-data{
+		height: 80px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+	.story-chart-box {
+		top: 50px;
+		left: 0;
+		display: flex;
+		flex-direction: column;
+	}
+	.story-chart-item{
+		position: relative;
+		.labelName{
+			position: absolute;
+			left: 10px;
+			top: 10px;
+			z-index: 10;
+			font-size: 12px;
+			background: rgba($color: #000000, $alpha: 0.4);
+			padding: 10px;
+			color: #fff;
+			border-radius: 5px;
+			pointer-events: none;
+		}
+	}
+}

@@ -13,8 +13,18 @@
     --el-fill-color-lighter: rgba(234, 237, 240, 1);
   }
 	.el-checkbox{
-		--el-checkbox-checked-bg-color: #f38320;
-		--el-checkbox-checked-input-border-color: #f38320;
+		--el-checkbox-checked-bg-color: #830051;
+		--el-checkbox-checked-input-border-color: #830051;
+	}
+	.el-switch{
+		--el-switch-on-color: #fff;
+	}
+	.el-select__wrapper{
+		--el-border-radius-base: 20px;
+		--el-color-primary: #830051;
+	}
+	.el-select-dropdown{
+		--el-color-primary: #830051;
 	}
 }
 

@@ -6,6 +6,9 @@
         <div class="number-container" @click="handlePlanClick">
           <span class="large-number">{{ planCountNum }}</span>
         </div>
+        <div class="number-container" @click="handlePlanClick">
+          <span class="large-number">/</span>
+        </div>
         <div class="number-container" @click="handleAchievedClick">
           <span class="large-number">{{ achieveCountNum }}</span>
         </div>

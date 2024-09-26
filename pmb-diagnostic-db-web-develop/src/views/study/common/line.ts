@@ -1,3 +1,5 @@
+import { color } from "echarts"
+
 export const phaseOptions = [
   { label: 'Phase I', value: 'PhaseI' },
   { label: 'PhaseII a', value: 'PhaseIIa' },
@@ -39,33 +41,6 @@ export const statusOptions = [
   { label: 'close out', value: 'closeOut' },
   { label: 'Approved', value: 'Approved' },
 ]
-
-export const treeLevelConfig = {
-	level1: {
-		code: 'Study Level 1 (unique)',
-		label: 'Study Level 1 (unique)'
-	},
-	level2: {
-		code: 'Study Level 2 (CTA)',
-				label: 'Study Level 2 (CTA)'
-	},
-	level3: {
-		code: 'Study Level 3 (CDx)',
-		label: 'Study Level 3 (CDx)'
-	},
-	level4: {
-		code: 'Study Level 4 (HGR)',
-		label: 'Study Level 4 (HGR)'
-	},
-	level5: {
-		code: 'Study Level 5 (Issue log)',
-		label: 'Study Level 5 (Issue log)'
-	},
-	level6: {
-		code: 'Study Level 6 (Other events)',
-		label: 'Study Level 6 (Other events)'
-	}
-}
 
 export const sortNameConfig:any = {
 	'Pre-PH3ID': 'PH3ID',

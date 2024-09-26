@@ -1,38 +1,47 @@
 <template>
-	<div ref="storyChartDom" class="strory-chart"
-		:class="{ isAssay: assayName, horizontal: horizontal, isAllYear: yearType == 'ALL' }">
-		<div v-if="assayName" class="assayName">{{ assayName }}</div>
+	<div
+		ref="storyChartDom"
+		class="strory-chart"
+		:class="{
+			isAssay: assayName,
+			horizontal: horizontal,
+			isAllYear: yearType == 'ALL',
+			isDisabled: isDisabled,
+			isZoomActive: isZoomActive
+		}"
+	>
 		<div v-if="dotData.length" class="dot-box">
 			<div v-if="horizontal" class="horizontal" />
-			<!-- 点图 -->
+			<!-- 点图 :append-to="storyChartDom"-->
 			<template v-for="row in dotData">
-				<el-tooltip popper-class="strory-chart-tips" placement="bottom" effect="light" :append-to="storyChartDom">
-					<div class="dot-item" :class="{ isActive: row.isActive, isTBD: row.isTBD }" :dot-code="row.code" :style="getStyle(row)">
+				<el-tooltip popper-class="strory-chart-tips" placement="bottom" effect="light" :append-to="domId ? `#${domId}` : 'body'">
+					<div
+						class="dot-item"
+						:class="{
+							isActive: row.isActive,
+							isTBD: row.isTBD,
+						}"
+						:dot-code="row.label"
+						:dot-index="stepConfig.$index"
+						:dot-date="row.date"
+						:dot-move-index="getDotMoveIndex(stepConfig.timeAxis, row.date)"
+						:style="getStyle(row)"
+					>
 						<div class="dot-item-desc">
 							<div class="name">{{ row.sortName || row.label }}</div>
 							<div v-if="row.date && !row.isTBD" class="date">{{ row.date }}</div>
-							<div v-if="row.isTBD">(TBD)</div>
+							<div v-if="row.isTBD" class="date">(TBD)</div>
 						</div>
 					</div>
 					<template #content>
-						<div class="tips-content">
-							<div class="name">{{ row.label }}</div>
-							<div v-if="row.date && !row.isTBD" class="date">{{ row.date }}</div>
-							<div v-if="row.isTBD">(TBD)</div>
-							<div v-if="row.linkName" class="linkname" @click="handleLink(row.linkTo)">{{ row.linkName }}</div>
-							<!-- 提示 -->
-							<div v-if="row.options && row.options.length" class="tips-box">
-								<div class="tips" v-for="tips in row.options">
-									<div v-if="tips.isSplit" class="split-line" />
-									<template v-else>
-										<span class="tips-dot" />
-										<span class="tips-label">{{ tips.label }}</span>
-										<span>:</span>
-										<span class="tips-value">{{ tips.value }}</span>
-									</template>
-								</div>
-							</div>
-						</div>
+						<TipsContent
+							:title="row.label"
+							:date="row.date"
+							:isTBD="row.isTBD"
+							:linkName="row.linkName"
+							:linkTo="row.linkTo"
+							:options="row.options"
+						/>
 					</template>
 				</el-tooltip>
 			</template>
@@ -41,7 +50,7 @@
 		<template v-for="group in barData">
 			<div class="bar-box">
 				<template v-for="row in group">
-					<el-tooltip popper-class="strory-chart-tips" placement="bottom" effect="light" :append-to="storyChartDom">
+					<el-tooltip popper-class="strory-chart-tips" placement="bottom" effect="light" :append-to="domId ? `#${domId}` : 'body'">
 						<div class="bar-item" :class="{ isActive: row.isActive }" :style="getBarStyle(row)">
 							<div class="dot-item-desc">
 								<div class="name">{{ row.label }}</div>
@@ -49,23 +58,14 @@
 							</div>
 						</div>
 						<template #content>
-							<div class="tips-content">
-								<div class="name">{{ row.label }}</div>
-								<div class="date">{{ row.startDate }} ~ {{ row.endDate }}</div>
-								<div v-if="row.linkName" class="linkname" @click="handleLink(row.linkTo)">{{ row.linkName }}</div>
-								<!-- 提示 -->
-								<div v-if="row.options && row.options.length" class="tips-box">
-									<div class="tips" v-for="tips in row.options">
-										<div v-if="row.isSplit" class="split-line" />
-										<template v-else>
-											<span class="tips-dot" />
-											<span class="tips-label">{{ tips.label }}</span>
-											<span>:</span>
-											<span class="tips-value">{{ tips.value }}</span>
-										</template>
-									</div>
-								</div>
-							</div>
+							<TipsContent
+								:title="row.label"
+								:date="`${row.startDate}~${row.endDate}`"
+								:isTBD="row.isTBD"
+								:linkName="row.linkName"
+								:linkTo="row.linkTo"
+								:options="row.options"
+							/>
 						</template>
 					</el-tooltip>
 				</template>
@@ -78,6 +78,8 @@
 import { onMounted, computed } from "vue";
 import { statusColorArr } from './common'
 import { groupBy } from "lodash"
+import TipsContent from './TipsContent.vue'
+import moment from 'moment'
 const props = defineProps({
 	stepConfig: {
 		type: Object as any,
@@ -94,6 +96,19 @@ const props = defineProps({
 	yearType: {
 		type: String,
 		default: ''
+	},
+	domId: {
+		type: String,
+		default: ""
+	},
+	// 是否放大active的点
+	isZoomActive: {
+		type: Boolean,
+		default: true
+	},
+	isDisabled: {
+		type: Boolean,
+		default: false
 	}
 });
 
@@ -118,26 +133,40 @@ const dotData = computed(() => {
 		if (item.isTBD) {
 			tbdData.push({ ...item, isTBD: true })
 		} else {
-			dotDate.push(item)
+			const yearList = props.stepConfig.dateList || []
+			if (yearList.includes(item.date)) {
+				dotDate.push(item)
+			}
 		}
 	})
 	// TBD 用虚线球表示，并且平分剩余的时间位置
 	// 截取剩余时间
 	if (tbdData.length) {
 		const yearList = props.stepConfig.dateList || []
+		console.log(props.stepConfig)
 		// 获取最大时间
 		let maxDateTime = new Date(yearList[0]).getTime()
 		let maxDate = yearList[0]
+		let finalDate = ''
+		if (props.stepConfig && props.stepConfig.initialDate) {
+			finalDate = props.stepConfig?.initialDate[1]
+		}
 		for (let i = 0; i < dotDate.length; i++) {
+			console.log(dotDate[i].date, finalDate)
+			if (dotDate[i].date == finalDate) {
+				console.log(maxDate)
+				break;
+			}
 			const currentDateTime = new Date(dotDate[i].date).getTime()
-			if (currentDateTime >= maxDateTime) {
+			if (currentDateTime >= maxDateTime && yearList.includes(dotDate[i].date)) {
 				maxDateTime = currentDateTime
 				maxDate = dotDate[i].date
 			}
 		}
 		const startIndex = yearList.findIndex((date: any) => date == maxDate)
+		const endIndex = yearList.findIndex((date: any) => date == finalDate)
 		if (startIndex >= 0) {
-			const yearSliceList = yearList.slice(startIndex, yearList.length - 1)
+			const yearSliceList = yearList.slice(startIndex, endIndex)
 			const average = Math.floor(yearSliceList.length / tbdData.length)
 			tbdData.forEach((item: any, index: number) => {
 				item.date = yearSliceList[index * average + Math.floor(average / 2)]
@@ -186,17 +215,31 @@ const getBarStyle = (row: any) => {
 		background: hexToRgba(row.color, 1),
 		left: `${getOffsetAmount(row, row.startDate)}px`,
 		width: `${getOffsetAmount(row, row.endDate) - getOffsetAmount(row, row.startDate)}px`,
-		// boxShadow: `0px 0px 1px 2px ${hexToRgba(row.color, 1)};`
 	}
+}
+const getDotMoveIndex = (timeAxis: any, date: any) => {
+	if (timeAxis) {
+		const currentDate = moment(date).format('YYYY-MM')
+		const findDate =  timeAxis.find((fi: any) => fi.date == currentDate)
+		if (findDate) {
+			return findDate.moveIndex
+		}
+	}
+	return ''
 }
 /**
  * 查询偏移量
  */
 const getOffsetAmount = (row: any, date: any) => {
 	if (props.stepConfig) {
-		const yearList = props.stepConfig.dateList
+		const yearList = props.stepConfig.dateList || []
 		const width = props.stepConfig.stepWidth
-		const buffer = props.yearType == 'ALL' ? (row.isActive ? 6 : 9) : (row.isActive ? 11 : 7)
+		let buffer = 0
+		if (props.isZoomActive) {
+			buffer = row.isActive ? 8 : 6
+		} else {
+			buffer = 6
+		}
 		let yearIndex = 0
 		if (date) {
 			yearIndex = yearList.findIndex((item: any) => item === date) + 1
@@ -244,34 +287,39 @@ const isOverlapping = (startDate1: any, endDate1: any, startDate2: any, endDate2
 	// 判断时间段是否重合
 	return start1 < end2 && end1 > start2;
 }
-
-const getDescStyle = (el: any) => {
-}
-
 onMounted(() => {
 });
-const handleLink = (link: any) => {
-	window.open(link)
-}
 </script>
 <style lang="scss" scoped>
 .strory-chart {
 	border: 1px solid #fff;
 	position: relative;
-	border-bottom: 1px dashed #000;
-	&:first-child {
-		border-bottom: 1px solid #fff;
+	border-bottom: 1px solid #D8DADA;
+	background: #fff;
+	margin-bottom: 5px;
+	padding: 40px 0;
+	&:last-child{
+		margin-bottom: 0;
 	}
-	&.isAllYear {
+	&.isDisabled{
 		.dot-box .dot-item {
-			width: 12px;
-			height: 12px;
-
-			&.isActive {
-				width: 18px;
-				height: 18px;
+			&:not(.isActive) {
+				opacity: 0.3;
 			}
 		}
+		.bar-box .bar-item {
+			opacity: 0.3;
+		}
+	}
+	&.isZoomActive{
+		.dot-box .dot-item {
+			&.isActive {
+				width: 16px;
+				height: 16px;
+			}
+		}			
+	}
+	&.isAllYear {
 		.dot-item-desc{
 			font-size: 12px;
 			transform: scale(0.8) translateX(-50%);
@@ -280,10 +328,6 @@ const handleLink = (link: any) => {
 		.bar-box .bar-item {
 			height: 12px;
 		}
-	}
-	.linkname{
-		cursor: pointer;
-		color: #20a6fc;
 	}
 	.dot-box {
 		position: relative;
@@ -295,29 +339,25 @@ const handleLink = (link: any) => {
 			position: absolute;
 			left: 0;
 			top: 50%;
-			background: #000;
+			background: #B2B4B4;
 			transform: translateY(-50%);
 		}
 
 		.dot-item {
 			cursor: pointer;
-			width: 16px;
-			height: 16px;
+			width: 12px;
+			height: 12px;
+			border-radius: 3px;
 			position: absolute;
 			left: 0;
 			top: 50%;
 			transform: translateY(-50%);
-			border-radius: 50%;
 			z-index: 1;
-			
-			&.isActive {
-				width: 24px;
-				height: 24px;
-			}
+
 
 			&.isTBD {
-				background: #a8abb2 !important;
-				border: 1px solid #606266;
+				background: #fff !important;
+				border: 1px solid #3C4242
 			}
 		}
 	}
@@ -329,12 +369,13 @@ const handleLink = (link: any) => {
 
 		.bar-item {
 			cursor: pointer;
-			height: 18px;
+			height: 12px;
 			position: absolute;
 			left: 0;
 			top: 50%;
 			transform: translateY(-50%);
 			z-index: 1;
+			border-radius: 4px;
 		}
 	}
 	.dot-item-desc{
@@ -344,21 +385,20 @@ const handleLink = (link: any) => {
 		transform: translateX(-50%);
 		display: flex;
 		flex-direction: column;
-		font-size: 12px;
 		white-space: nowrap;
 		line-height: 1;
 		text-align: center;
+		.name{
+			font-size: 13px;
+		}
+		.date{
+			font-size: 12px;
+		}
 	}
 	&.isAssay {
-		background: #f9f9f9;
-		border-top: 1px solid #000;
-		border-bottom: 1px solid #000;
+		border-top: 1px solid #D8DADA;
+		border-bottom: 1px solid #D8DADA;
 		margin-bottom: 20px;
-		padding: 20px 0;
-	}
-
-	&.horizontal {
-		padding: 20px 0;
 	}
 
 	.assayName {
@@ -370,33 +410,4 @@ const handleLink = (link: any) => {
 }
 </style>
 <style lang="scss">
-.strory-chart-tips {
-	z-index: 9999;
-
-	.tips-box {
-		margin-top: 8px;
-		border-top: 1px dashed #4a4a4a;
-		padding-top: 10px;
-	}
-	.split-line{
-		border-top: 1px dashed #4a4a4a;
-		height: 0;
-		margin: 8px 0;
-		width: 100%;
-	}
-	.tips {
-		display: flex;
-		align-items: center;
-		gap: 3px;
-		position: relative;
-
-		.tips-dot {
-			width: 5px;
-			height: 5px;
-			border-radius: 50%;
-			background: #4a4a4a;
-			margin-right: 3px;
-		}
-	}
-}
 </style>

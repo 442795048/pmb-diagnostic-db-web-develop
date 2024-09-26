@@ -31,6 +31,20 @@ class UserLogAPI {
       params: queryParams,
     });
   }
+
+  /**
+   * 时间轴查询
+   *
+   * @param queryParams 查询参数
+   * @returns 日志明细列表
+   */
+    static listTimeline(queryParams: TimelineQuery) {
+      return request<any, UserLogItemVO[]>({
+        url: `${Log_BASE_URL}/listTimeline`,
+        method: "get",
+        params: queryParams,
+      });
+    }
 }
 
 export default UserLogAPI;
@@ -42,8 +56,8 @@ export interface UserLogPageQuery extends PageQuery {
   /** 搜索关键字 */
   keywords?: string;
 
-  /** 业务主键 */
-  businesskeys?: string;
+  /** 主键 */
+  primaryKey?: string;
 
   /** 用户名 */
   username?: string;
@@ -56,7 +70,7 @@ export interface UserLogPageQuery extends PageQuery {
 }
 
 /**
- * 日志明细查询参数
+ * 日志明细查询对象
  */
 export interface UserLogItemQuery {
   /**
@@ -69,6 +83,20 @@ export interface UserLogItemQuery {
 
   /** 结束时间 */
   endDate?: string;
+}
+
+/**
+ * 时间轴查询对象
+ */
+export interface TimelineQuery {
+  /** 表名称 */
+  tableName?: string;
+
+  /** 主键 */
+  primaryKey?: string;
+
+  /** 字段名称 */
+  fieldName?: string;
 }
 
 /**
@@ -102,25 +130,25 @@ export interface UserLogItemVO {
    */
   userLogId?: number;
   /**
-   * 日志类型（1、行级别，2、字段级别）
+   * 日志类型（1、INSERT，2、UPDATE）
    */
-  userLogType?: string;
+  operateType?: string;
   /**
-   * 业务主键
+   * 主键
    */
-  businessKey?: string;
+  primaryKey?: string;
   /**
    * 字段名称
    */
-  columnName?: string;
+  fieldName?: string;
   /**
    * 修改后的值
    */
-  value?: string;
+  valueAfter?: string;
   /**
    * 修改前的值
    */
-  originalValue?: string;
+  valueBefore?: string;
   /**
    * 修改原因
    */
@@ -129,4 +157,8 @@ export interface UserLogItemVO {
    * 修改时间
    */
   createTime?: string;
+    /**
+   * 修改人
+   */
+  createBy?: string;
 }

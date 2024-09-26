@@ -3,7 +3,7 @@
     <!-- <el-button type="primary" @click="addPanelToFirst">
       新增第一个折叠组件面板
     </el-button> -->
-    <CollapseComponent title="Study Level 3" style="font-size: 14px;color: #4a4a4a;" :panels="panelForms"
+    <CollapseComponent title="Study Level 3 Cdx" style="font-size: 14px;color: #4a4a4a;" :panels="panelForms"
       :active-panels="activePanels" @add-panel="addPanelToFirst" @delete-panel="deletePanelToFirst"
       @update-panel="updatePanel">
 
@@ -13,38 +13,38 @@
           <el-row :gutter="10">
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="CDx ID" prop="cdxId">
-                <el-input v-model="item.cdxId" disabled />
+                <el-input v-model="item.cdxId" disabled clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="CDx Managed by" prop="cdxManagedBy">
-                <el-select-v2 v-model="item.cdxManagedBy" placeholder="Please select" :options="cdxManagedByOptions" />
+                <el-select-v2 v-model="item.cdxManagedBy" placeholder="Please select" :options="cdxManagedByOptions" clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Dx activity stage" prop="dxActivityStage">
                 <el-select-v2 v-model="item.dxActivityStage" placeholder="Please select"
-                  :options="dxActivityStageOptions" />
+                  :options="dxActivityStageOptions" clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="CDx category" prop="cdxCategory">
-                <el-select-v2 v-model="item.cdxCategory" placeholder="Please select" :options="cdxCategoryOptions" />
+                <el-select-v2 v-model="item.cdxCategory" placeholder="Please select" :options="cdxCategoryOptions" clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Biomark" prop="biomarker">
-                <el-input v-model="item.biomark" placeholder="Please enter" />
+                <el-input v-model="item.biomark" placeholder="Please enter" @input="makeWpId(idx)" @clear = "handleClear(idx)" clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Dx partner" prop="dxPartner">
-                <el-input v-model="item.dxPartner" disabled />
+                <el-input v-model="item.dxPartner" disabled clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Assay Name" prop="assayName">
-                <el-input v-model="item.assayName" disabled />
+                <el-input v-model="item.assayName" disabled clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
@@ -55,8 +55,8 @@
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Sample type" prop="sampleType">
-                <el-select-v2 v-model="item.sampleType" placeholder="Please select" :options="sampleTypeOptions"
-                  @change="makeWpId(idx)" />
+                <el-select-v2 v-model="item.sampleType" placeholder="Please select" :options="sampleTypeOptions" clearable
+                  @change="makeWpId(idx)" @clear = "handleClear(idx)"/>
               </el-form-item>
             </el-col>
 
@@ -73,7 +73,7 @@
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Tumor type" prop="tumorType">
-                <el-select-v2 v-model="item.tumorType" placeholder="Please select" :options="tumorTypeOptions" />
+                <el-select-v2 v-model="item.tumorType" placeholder="Please select" :options="tumorTypeOptions" clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="8" :md="8" :lg="8" :xl="8">
@@ -387,7 +387,8 @@ const addPanelToFirst = () => {
   panelForms.value.push({});
   // 折叠其他面板
   activePanels.value = "0";
-  emits('handleCount', panelForms.value.length)
+  const filteredForms = panelForms.value.filter(form => form.cdxId);
+  emits('handleCount', filteredForms.length)
   const wpValues: any[] = [];
   for (const key in panelForms.value) {
 
@@ -440,7 +441,11 @@ const onInputChange = (event: Event, extraParam: number) => {
 };
 
 const makeWpId = (e: number) => {
-  panelForms.value[e].cdxId = 'CDx_' + props.studyName + '_' + panelForms.value[e].biomark + '_' + panelForms.value[e].sampleType
+  if( props.studyName && panelForms.value[e].biomark && panelForms.value[e].sampleType) {
+    panelForms.value[e].cdxId = 'CDx_' + props.studyName + '_' + panelForms.value[e].biomark + '_' + panelForms.value[e].sampleType
+  } else {
+    panelForms.value[e].cdxId = ''
+  }
   const wpValues: any[] = [];
   for (const key in panelForms.value) {
 
@@ -450,8 +455,27 @@ const makeWpId = (e: number) => {
     }
 
   }
+  const filteredForms = panelForms.value.filter(form => typeof form.cdxId === 'string' && form.cdxId != '' && form.cdxId != null && form.cdxId != undefined);
+  emits('handleCount', filteredForms.length)
   emits('handleCdx', wpValues)
 }
+
+const handleClear = (e: number) => {
+  panelForms.value[e].cdxId = ''
+  const wpValues: any[] = [];
+  for (const key in panelForms.value) {
+
+    const form = panelForms.value[key];
+    if (typeof form.cdxId === 'string' && form.cdxId != '' && form.cdxId != null && form.cdxId != undefined) {
+      wpValues.push({ label: form.cdxId, value: form.cdxId });
+    }
+
+  }
+  const filteredForms = panelForms.value.filter(form => typeof form.cdxId === 'string' && form.cdxId != '' && form.cdxId != null && form.cdxId != undefined);
+  emits('handleCount', filteredForms.length)
+  emits('handleCdx', wpValues)
+}
+
 const updatePanel = (e: String) => {
   console.log("切换了", e);
 }
