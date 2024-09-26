@@ -19,3 +19,16 @@ export const getSpecifyMonths = (date: any, count: any) => {
 		after
 	}
 }
+
+/**
+ * 获取指定月份第一天
+ */
+export const getFirstDayOfMonth = (time: any) => {
+  return moment(time).startOf('month').format('YYYY-MM-DD');
+}
+/**
+ * 获取指定月份最后一天
+ */
+export const getLastDayOfMonth = (time: any) => {
+  return moment(time).endOf('month').format('YYYY-MM-DD');
+}

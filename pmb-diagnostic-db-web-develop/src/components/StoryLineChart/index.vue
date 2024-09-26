@@ -18,34 +18,34 @@
 						<div class="swtich-text">{{ isActive == 'ALL' ? 'All year' : 'One Year' }}</div>
 						<el-switch v-model="isActive" active-value="ALL" inactive-value="Switch" @change="handleClickMenu(isActive)" />
 					</div>
-					<el-icon v-show="chartList.length && isActive == 'Switch'" class="chart-refresh-icon" @click="resetScroll()"><Refresh /></el-icon>
+					<el-icon v-show="chartList.length && isActive == 'Switch'" class="chart-refresh-icon" @click="init()"><Refresh /></el-icon>
 					<!--全屏 -->
 					<ScreenLayout v-if="!hideFullScreen" :domId="domId" @handleScreenFull="handleScreenFull" />
 				</div>
 			</div>
 		</div>
-		<div class="chart-layout-scroll">
+		<div class="switch-btn">
+			<el-icon
+				v-if="chartList[0] && getShowSwitchBtn(chartList[0].stepConfig)"
+				class="leftbtn"
+				@click="handleScrollLeft()"
+				@mousedown="handleMouseDownLeft(chartList[0].stepConfig)"
+				@mouseup="handleMouseUp"
+			>
+				<ArrowLeftBold />
+			</el-icon>
+			<el-icon
+				v-if="chartList[0] && getShowSwitchBtn(chartList[0].stepConfig)"
+				class="rightbtn"
+				@click="handleScrollRight()"
+				@mousedown="handleMouseDownRight(chartList[0].stepConfig)"
+				@mouseup="handleMouseUp"
+			>
+				<ArrowRightBold />
+			</el-icon>
+		</div>
+		<div class="chart-layout-scroll" id="target-element">
 			<div class="chart-layout" :class="{ isAllYear: isActive == 'ALL' }" :style="layoutStyle">
-				<template v-for="(chart, index) in chartList">
-					<el-icon
-						v-if="index == 0 && getShowSwitchBtn(chart.stepConfig)"
-						class="leftbtn"
-						@click="handleScrollLeft()"
-						@mousedown="handleMouseDownLeft(chart.stepConfig)"
-						@mouseup="handleMouseUp"
-					>
-						<ArrowLeftBold />
-					</el-icon>
-					<el-icon
-						v-if="index == 0 && getShowSwitchBtn(chart.stepConfig)"
-						class="rightbtn"
-						@click="handleScrollRight()"
-						@mousedown="handleMouseDownRight(chart.stepConfig)"
-						@mouseup="handleMouseUp"
-					>
-						<ArrowRightBold />
-					</el-icon>
-				</template>
 				<div
 					ref="chartLayoutContentRef"
 					class="chart-layout-content"
@@ -57,12 +57,12 @@
 					<template v-if="showChart">
 						<div
 							class="chart-layout-box"
-							v-for="chart in chartList"
+							v-for="(chart, index) in chartList"
 							:style="{
 								left: showMarkLine ? `${chart.stepConfig?.left}px` : '0px'
 							}"
 						>
-							<TimeAxis :yearType="isActive" :stepConfig="chart.stepConfig" />
+							<TimeAxis :class="{ firstTimeAxis: index == 0 }" :yearType="isActive" :stepConfig="chart.stepConfig" />
 							<div class="story-chart-box">
 								<div v-for="(config, index) in chart.list" class="story-chart-item">
 									<StroryChart
@@ -71,6 +71,7 @@
 										:yearType="isActive"
 										:config="config"
 										:domId="domId"
+										:structure="index"
 										:isZoomActive="isZoomActive"
 										:isDisabled="isDisabled"
 									/>
@@ -90,7 +91,8 @@ import StroryChart from './StroryChart.vue'
 import ScreenLayout from '@/components/ScreenLayout.vue'
 import { ref, onMounted, onUnmounted, watch } from "vue";
 import { statusColorArr, levelConfig } from './common'
-import { getSpecifyMonths } from '@/utils/date'
+import { groupBy } from "lodash"
+import { getSpecifyMonths, getFirstDayOfMonth, getLastDayOfMonth } from '@/utils/date'
 import moment from 'moment'
 interface Years {
 	year: string | number;
@@ -113,6 +115,11 @@ const props = defineProps({
 	},
 	// disabled高亮时是否置灰其他点
 	activeType: {
+		type: String,
+		default: ""
+	},
+	// duration类型： 'every': 每一个都对比
+	durationType: {
 		type: String,
 		default: ""
 	},
@@ -258,6 +265,7 @@ const resetScroll = (date?: any) => {
 const reset = () => {
 	layoutContentStyle.value.left = 0
 	moveIndex.value = 0
+	deleteDurationDom()
 }
 
 /**
@@ -363,18 +371,7 @@ const getMonthsAndYearAll = (startDate: any, endDate: any) => {
   }
 	return timeAxis
 }
-/**
- * 获取指定月份第一天
- */
-const getFirstDayOfMonth = (time: any) => {
-  return moment(time).startOf('month').format('YYYY-MM-DD');
-}
-/**
- * 获取指定月份最后一天
- */
-const getLastDayOfMonth = (time: any) => {
-  return moment(time).endOf('month').format('YYYY-MM-DD');
-}
+
 /**
  * 格式化月份/天数显示
  */
@@ -492,17 +489,26 @@ const handleScrollAxis = () => {
  * 更新markLine的显示
  */
 const updateMarkLine = () => {
-	if (!props.showMarkLine) return
+	if (!props.showMarkLine) {
+		return
+	}
 	const elements: any = document.querySelectorAll(`[dot-code="${props.markLineId}"]`)
-
 	if (elements && elements.length) {
-		const elementLeft = elements[0].style.left
+		let currentEl = elements[0]
+		for (let index = 0; index < elements.length; index++) {
+			const element = elements[index];
+			if (element.getAttribute('dot-TBD') != 'true') {
+				currentEl = element
+				break;
+			}
+		}
+		const elementLeft = currentEl.style.left
 		markLineStyle.value.left = elementLeft.replace('px', '')
 		// const chartRow = props.chartList[elIndex]
 		if (isActive.value == 'Switch') {
 			// 将高亮点移动到可视位置
-			const el0Index = elements[0].getAttribute('dot-index')
-			const el0MoveIndex = elements[0].getAttribute('dot-move-index')
+			const el0Index = currentEl.getAttribute('dot-chart-index')
+			const el0MoveIndex = currentEl.getAttribute('dot-move-index')
 			const chart0Row = props.chartList[el0Index]
 			if (chart0Row) {
 				// 判断轴是否在可视范围内
@@ -512,7 +518,7 @@ const updateMarkLine = () => {
 				const right = left + width + buffer
 				if (markLineStyle.value.left > left && markLineStyle.value.left < right) {
 					if (chart0Row.stepConfig.$index == el0Index) {
-						const elLeft = Number(elements[0].style.left.replace('px', ''))
+						const elLeft = Number(currentEl.style.left.replace('px', ''))
 						chart0Row.stepConfig.left = markLineStyle.value.left - elLeft
 					}
 				} else {
@@ -524,9 +530,10 @@ const updateMarkLine = () => {
 			}
 			// 对其除了首个轴的所有轴
 			setTimeout(() => {
-				elements.forEach((el: any) => {
-					const elIndex = el.getAttribute('dot-index')
-					if (elIndex !== 1) {
+				const currentElIndex = currentEl.getAttribute('dot-chart-index')
+				elements.forEach((el: any, index: number) => {
+					const elIndex = el.getAttribute('dot-chart-index')
+					if (elIndex !== currentElIndex) {
 						const chartRow = props.chartList[elIndex]
 						if (chartRow && chartRow.stepConfig.$index == elIndex) {
 							const elLeft = Number(el.style.left.replace('px', ''))
@@ -536,12 +543,140 @@ const updateMarkLine = () => {
 				})
 			}, 0)
 		}
+
+		// 更新duration
+		updateDuration(currentEl)
+	}
+}
+
+/**
+ * 更新duration
+ * 显示信息
+ */
+const updateDuration = (el: any)  => {
+	const chartLayoutBox = document.querySelectorAll('.chart-layout-box')
+	const resultArr: any = []
+	chartLayoutBox.forEach((boxEl: any) => {
+	 	const dotEl =	boxEl.querySelectorAll('.dot-item.isActive')
+		resultArr.push(dotEl)
+	})
+	resultArr.forEach((els: any) => {
+		
+		if (props.durationType == 'every') {
+			// 每个都做对比
+			getEveryCompare(els)
+		} else {
+			// 两两同轴对比
+			getSameCompare(els)
+		}
+
+	})
+}
+
+/**
+ * 获取同轴的对比数据
+ */
+const getSameCompare = (els:any) => {
+	const elsArr: any = []
+	els.forEach((el: any) => {
+		const structure = el.getAttribute('dot-structure')
+		elsArr.push({
+			structure,
+			el
+		})
+	})
+	const group: any = groupBy(elsArr, 'structure') || {}
+	const groupArr: any = []
+	Object.keys(group).forEach((key: any) => {
+		groupArr.push(...group[key])
+	})
+	if (groupArr.length == 2) {
+		createDurationDom(groupArr[0].el, groupArr[1].el, 'every')
+	}
+}
+
+/**
+ * 获取不同轴的对比数据
+ */
+const getEveryCompare = (els:any) => {
+	const elsArr: any = []
+	els.forEach((el: any) => {
+		const code = el.getAttribute('dot-code')
+		elsArr.push({
+			code,
+			el
+		})
+	})
+	let currentDom = elsArr.find((fi: any) => fi.code == props.markLineId)
+	const elsDoms = elsArr.filter((el: any) => el != currentDom)
+	elsDoms.forEach((tragetDom: any) => {
+		createDurationDom(currentDom.el, tragetDom.el, 'every')
+	})
+}
+
+/**
+ * 创建Duration dom信息
+ */
+const createDurationDom = (currentDom: any, tragetDom: any, type?: any) => {
+	// 获取dom信息
+	const currentDate = currentDom.getAttribute('dot-date')
+	const targetDate = tragetDom.getAttribute('dot-date')
+	// 计算位置
+	const currentLeft = Number(currentDom.style.left.replace(/px/, ''))
+	const targetLeft = Number(tragetDom.style.left.replace(/px/, ''))
+	let target = tragetDom
+	// 添加dome
+	const newDiv = document.createElement("div");
+	newDiv.classList.add("storyLineChartCompareDiv");
+	let width = targetLeft > currentLeft ? (targetLeft - currentLeft - 10) : (currentLeft - targetLeft - 10)
+	console.log(width, targetLeft, currentLeft)
+	newDiv.style.width = `${width}px`
+	if (type == 'every') {
+		newDiv.style.left = targetLeft > currentLeft ? `-${width}px` : `11px`
+	}
+	// 增加时间
+	let monthsDiff = moment(targetDate).diff(moment(currentDate), 'months')
+	monthsDiff = isNaN(monthsDiff) ? '' : Math.abs(monthsDiff)
+	if (monthsDiff) {
+		const newSpan = document.createElement("span");
+		newSpan.classList.add("storyLineChartCompareSpan");
+		newSpan.innerHTML = `${monthsDiff} Month`
+		newDiv.append(newSpan)
+	}
+	// 增加主目标点
+	if (type === 'every') {
+		const newDot = document.createElement("span");
+		newDot.classList.add("storyLineChartCompareDot");
+		const color = currentDom.style.background
+		newDot.style.background = color
+		if (currentLeft < targetLeft) {
+			newDot.style.left = `-11px`
+		} else {
+			newDot.style.left = `${width - 1}px`
+		}
+		newDiv.append(newDot)
+	}
+	target.appendChild(newDiv)
+}
+
+/**
+ * 删除duration
+ */
+const deleteDurationDom = () => {
+	// 删除duration
+	const elements = document.querySelectorAll('.storyLineChartCompareDiv');
+	if (elements && elements.length) {
+		elements.forEach(function(element) {
+			element.remove();
+		});
 	}
 }
 
 watch(() => props.showMarkLine, (val) => {
 	if (val) {
 		updateMarkLine()
+	} else {
+		deleteDurationDom()
 	}
 })
 defineExpose({
@@ -565,5 +700,33 @@ defineExpose({
 }
 .chart-refresh-icon{
 	cursor: pointer;
+}
+</style>
+<style lang="scss">
+.storyLineChartCompareDiv{
+	background: rgba(0, 0, 0, 0.1);
+	height: 11px;
+	position: absolute;
+	top: 0;
+	left: 10px;
+	z-index: 1;
+}
+.storyLineChartCompareSpan{
+	font-size: 12px;
+	color: #000;
+	position: absolute;
+	top: -14px;
+	left: 50%;
+	transform: translateX(-50%);
+	white-space: nowrap;
+}
+.storyLineChartCompareDot{
+	width: 12px;
+	height: 12px;
+	border-radius: 3px;
+	position: absolute;
+	left: 0;
+	top: 0;
+	z-index: 1;
 }
 </style>

@@ -22,8 +22,11 @@
 							isTBD: row.isTBD,
 						}"
 						:dot-code="row.label"
-						:dot-index="stepConfig.$index"
+						:dot-chart-index="stepConfig.$index"
 						:dot-date="row.date"
+						:dot-structure="structure"
+						:dot-TBD="row.isTBD ? 'true' : 'false'"
+						:dot-isActive="row.isActive ? 'true' : 'false'"
 						:dot-move-index="getDotMoveIndex(stepConfig.timeAxis, row.date)"
 						:style="getStyle(row)"
 					>
@@ -79,7 +82,9 @@ import { onMounted, computed } from "vue";
 import { statusColorArr } from './common'
 import { groupBy } from "lodash"
 import TipsContent from './TipsContent.vue'
+import { getFirstDayOfMonth, getLastDayOfMonth } from '@/utils/date'
 import moment from 'moment'
+import { number } from "echarts";
 const props = defineProps({
 	stepConfig: {
 		type: Object as any,
@@ -100,6 +105,11 @@ const props = defineProps({
 	domId: {
 		type: String,
 		default: ""
+	},
+	// 层级
+	structure: {
+		type: number,
+		default: 0
 	},
 	// 是否放大active的点
 	isZoomActive: {
@@ -143,18 +153,27 @@ const dotData = computed(() => {
 	// 截取剩余时间
 	if (tbdData.length) {
 		const yearList = props.stepConfig.dateList || []
-		console.log(props.stepConfig)
 		// 获取最大时间
-		let maxDateTime = new Date(yearList[0]).getTime()
-		let maxDate = yearList[0]
-		let finalDate = ''
+		let startDate = yearList[0]
+		let endDate = ''
 		if (props.stepConfig && props.stepConfig.initialDate) {
-			finalDate = props.stepConfig?.initialDate[1]
+			// 判断是否存在开始时间，如果不存在则获取当前显示轴的第一天
+			startDate = props.stepConfig?.initialDate[0]
+			const isHasStartDate = dotDate.find((fi: any) => fi.date == startDate)
+			if (!isHasStartDate) {
+				startDate = getFirstDayOfMonth(startDate)
+			}
+			// 判断是否存在结束时间，如果不存在则获取当前显示轴的最后一天
+			endDate = props.stepConfig?.initialDate[1]
+			const isHasEndDate = dotDate.find((fi: any) => fi.date == endDate)
+			if (!isHasEndDate) {
+				endDate = getLastDayOfMonth(endDate)
+			}
 		}
+		let maxDateTime = new Date(startDate).getTime()
+		let maxDate = startDate
 		for (let i = 0; i < dotDate.length; i++) {
-			console.log(dotDate[i].date, finalDate)
-			if (dotDate[i].date == finalDate) {
-				console.log(maxDate)
+			if (dotDate[i].date == endDate) {
 				break;
 			}
 			const currentDateTime = new Date(dotDate[i].date).getTime()
@@ -163,8 +182,8 @@ const dotData = computed(() => {
 				maxDate = dotDate[i].date
 			}
 		}
-		const startIndex = yearList.findIndex((date: any) => date == maxDate)
-		const endIndex = yearList.findIndex((date: any) => date == finalDate)
+		let startIndex = yearList.findIndex((date: any) => date == maxDate)
+		const endIndex = yearList.findIndex((date: any) => date == endDate)
 		if (startIndex >= 0) {
 			const yearSliceList = yearList.slice(startIndex, endIndex)
 			const average = Math.floor(yearSliceList.length / tbdData.length)

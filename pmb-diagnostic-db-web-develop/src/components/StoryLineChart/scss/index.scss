@@ -49,6 +49,7 @@
 		flex: 1;
 		overflow-y: auto;
 		overflow-x: hidden;
+		position: relative;
 	}
 	.chart-layout {
 		position: relative;
@@ -58,29 +59,7 @@
 				transition: none;
 			}
 		}
-		.leftbtn,
-		.rightbtn {
-			cursor: pointer;
-			height: 50px;
-			width: 25px;
-			display: flex;
-			align-items: center;
-			justify-content: center;
-			background: #830051;
-			color: #fff;
-			position: absolute;
-			top: 0;
-			z-index: 2;
-			font-size: 12px;
-		}
 
-		.leftbtn {
-			left: 0;
-		}
-
-		.rightbtn {
-			right: 0;
-		}
 		.chart-layout-content{
 			position: absolute;
 			left: 0;
@@ -96,6 +75,8 @@
 				}
 			}
 		}
+	}
+	.firstTimeAxis{
 	}
 	.no-chart-data{
 		height: 80px;
@@ -123,5 +104,31 @@
 			border-radius: 5px;
 			pointer-events: none;
 		}
+	}
+}
+.switch-btn{
+	position: relative;
+	.leftbtn,
+	.rightbtn {
+		cursor: pointer;
+		height: 50px;
+		width: 25px;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		background: #830051;
+		color: #fff;
+		position: absolute;
+		top: 0;
+		z-index: 2;
+		font-size: 12px;
+	}
+	
+	.leftbtn {
+		left: 0;
+	}
+	
+	.rightbtn {
+		right: 0;
 	}
 }
