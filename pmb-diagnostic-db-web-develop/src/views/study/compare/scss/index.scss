@@ -25,68 +25,7 @@
 	}
 	.compare-layout-chart{
 		width: calc(100% - 340px);
-		display: flex;
-		flex-direction: column;
-		background: #F4F4F4;
-		&.common-card{
-			padding: 0;
-			padding-bottom: 20px;
-		}
-		.chart-header{
-			padding: 15px 10px 0;
-			.title{
-				font-size: 18px;
-				color: #3C4242;
-				font-weight: bold;
-				text-align: center;
-				margin-bottom: 10px;
-			}
-			.operation{
-				display: flex;
-				justify-content: space-between;
-				.left-box, .right-box{
-					display: flex;
-					align-items: center;
-					flex-wrap: wrap;
-					gap: 10px;
-				}
-				.color-box {
-					display: flex;
-					align-items: center;
-					font-size: 12px;
-					gap: 5px;
-					margin-right: 5px;
-					white-space: nowrap;
-					.color {
-						width: 12px;
-						height: 12px;
-						border-radius: 4px;
-					}
-				}
-				.swtich-text{
-					color: #830051;
-					white-space: nowrap;
-					font-size: 12px;
-				}
-			}
-		}
-		.chart-content{
-			display: flex;
-			flex-direction: column;
-			gap: 10px;
-			padding: 0;
-			overflow: auto;
-			overflow-x: hidden;
-			position: relative;
-			.story-line-chart{
-				background: #fff;
-				border-radius: 0;
-				border-left: none;
-				border-right: none;
-				border-top: none;
-				overflow: initial;
-			}
-		}
+		height: 100%;
 	}
 	.story-line-tree {
 		width: 320px;

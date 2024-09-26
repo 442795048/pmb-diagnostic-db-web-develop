@@ -1,12 +1,14 @@
 .story-line-chart {
 	display: flex;
 	flex-direction: column;
-	overflow-x: hidden;
+	overflow: hidden;
 	padding: 0;
+	height: 100%;
 	background: #F4F4F4;
+	padding-bottom: 20px;
 	.story-line-header{
-		padding: 15px 10px 0;
-		margin-bottom: 5px;
+		padding: 15px 10px 5px;
+		background: #F4F4F4;
 		.title{
 			font-size: 18px;
 			color: #3C4242;
@@ -43,22 +45,19 @@
 			}
 		}
 	}
-
-	.unit {
-		margin: 5px 0;
-		font-size: 12px;
-		color: red;
+	.chart-layout-scroll{
+		flex: 1;
+		overflow-y: auto;
+		overflow-x: hidden;
 	}
-
-	.time-axis-menu {
-		position: relative;
-
-	}
-
 	.chart-layout {
 		position: relative;
-		flex: 1;
 		// border: 1px solid #000;
+		&.isAllYear{
+			.chart-layout-content{
+				transition: none;
+			}
+		}
 		.leftbtn,
 		.rightbtn {
 			cursor: pointer;
@@ -71,7 +70,7 @@
 			color: #fff;
 			position: absolute;
 			top: 0;
-			z-index: 1;
+			z-index: 2;
 			font-size: 12px;
 		}
 
@@ -82,27 +81,20 @@
 		.rightbtn {
 			right: 0;
 		}
-	}
-
-	.story-line-scroll {
-		padding-bottom: 20px;
-		overflow: auto;
-		position: relative;
-		height: 100%;
-		.story-line-content{
-			overflow: auto;
-		}
-		&.isAll {
-			// overflow: initial;
-			.story-line-content{
-				overflow: auto;
+		.chart-layout-content{
+			position: absolute;
+			left: 0;
+			top: 0;
+			transition: left 0.2s ease-in-out;
+			background: #830051;
+			.chart-layout-box{
+				margin-bottom: 10px;
+				position: relative;
+				left: 0;
+				&:last-child{
+					margin-bottom: 0;
+				}
 			}
-		}
-
-		&::-webkit-scrollbar {
-			width: 0;
-			/* 设置滚动条的宽度 */
-			height: 0;
 		}
 	}
 	.no-chart-data{
@@ -112,6 +104,8 @@
 		justify-content: center;
 	}
 	.story-chart-box {
+		top: 50px;
+		left: 0;
 		display: flex;
 		flex-direction: column;
 	}

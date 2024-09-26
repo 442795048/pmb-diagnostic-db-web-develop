@@ -3,7 +3,7 @@
     <!-- <el-button type="primary" @click="addPanelToFirst">
       新增第一个折叠组件面板
     </el-button> -->
-    <CollapseComponent title="Study Level 6" style="font-size: 14px;color: #4a4a4a;" :panels="panelForms"
+    <CollapseComponent title="Study Level 6 Other Events" style="font-size: 14px;color: #4a4a4a;" :panels="panelForms"
       :active-panels="activePanels" @add-panel="addPanelToFirst" @delete-panel="deletePanelToFirst"
       @update-panel="updatePanel">
 

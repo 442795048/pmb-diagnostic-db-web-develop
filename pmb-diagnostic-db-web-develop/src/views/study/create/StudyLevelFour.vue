@@ -1,7 +1,7 @@
 <template>
   <div class="w-full" style="width: 100%;">
     <CollapseComponent
-			title="HGR"
+			title="Study Level 4 HGR"
 			style="font-size: 12px;color: #4a4a4a;"
 			:panels="panelForms"
       :showTitleBtn="false"
@@ -238,6 +238,10 @@ const addPanelChild = (panelList: any, panel: any, parent: any) => {
  * 子级删除面板
  */
 const deletePanelChild = (index: any, data) => {
+  if (data.length < 2) {
+    ElMessage.error('至少保留一个面板');
+    return
+  }
   data.splice(index, 1)
 }
 

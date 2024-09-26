@@ -115,13 +115,14 @@ const initTree = () => {
 	treeData.value = []
 	return StudyAPI.viewStudy(studyName.value).then((data)=>{
 		const result: any = data || {}
-		const { level1Datas, level2Datas, level3Datas, level4Datas, level5Datas, level6Datas  } = result
+		const { level1Datas, level2Datas, level3Datas, level4Datas, level5Datas, level6Datas, createDate } = result
 		// level2
 		const levelConfig1: any = levelConfig.find((fi: any) => fi.type == 'level1')
 		const row1 = getTreeRow(level1Datas, 1, levelConfig1.color)
 		treeData.value.push({
 			...levelConfig1,
 			...row1,
+			createDate,
 			btns: ['edit']
 		})
 		// level2

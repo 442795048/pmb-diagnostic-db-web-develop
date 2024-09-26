@@ -148,7 +148,7 @@
         </el-col>
         <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
           <el-form-item label="Milestone">
-            <el-select-v2 v-model="queryParams.startDateType" placeholder="Please select" :options="dateTypeOptions"
+            <el-select-v2 v-model="queryParams.startDateType" placeholder="Please select" :options="dateTypeOptions" @change="changeStartType"
               clearable />
           </el-form-item>
         </el-col>
@@ -160,7 +160,7 @@
         </el-col>
         <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
           <el-form-item label="Milestone">
-            <el-select-v2 v-model="queryParams.endDateType" placeholder="Please select" :options="dateTypeOptions"
+            <el-select-v2 v-model="queryParams.endDateType" placeholder="Please select" :options="dateTypeOptions"  @change="changeEndType"
               clearable />
           </el-form-item>
         </el-col>
@@ -192,7 +192,10 @@
             style="width: 100px;height: 22px;background-color: #003865;" @click="handleNew">
             New
           </el-button>
-          <el-button round class="common-button" style="width: 100px;height: 22px;" :disabled="multipleSelection.length < 2" @click="handleCompare">
+          <el-button
+						round class="common-button" style="width: 100px;height: 22px;" :disabled="multipleSelection.length < 2"
+						@click="handleCompare"
+					>
             Compare
           </el-button>
         </div>
@@ -473,6 +476,20 @@ const selectBiomarkOption = (option: string) => {
   showBiomarkDropdown.value = false;
 };
 
+const changeStartType = () => {
+  if(queryParams.startDateType) {
+    if(queryParams.endDateType == null || queryParams.endDateType == '') {
+      queryParams.endDateType = queryParams.startDateType
+    }
+  }
+}
+const changeEndType = () => {
+  if(queryParams.endDateType) {
+    if(queryParams.startDateType == null || queryParams.startDateType == '') {
+      queryParams.startDateType = queryParams.endDateType
+    }
+  }
+}
 const hideBiomarkDropdown = () => {
   setTimeout(() => {
     showBiomarkDropdown.value = false;
@@ -538,7 +555,6 @@ const hideAssayNameDropdown = () => {
 
 const handleCompare = () => {
   // console.log("submit!");
-	console.log(multipleSelection.value)
 	const studyNames = multipleSelection.value.map((item: any) => item.studyName)
   router.push({
 		path: "/study/compare",
@@ -568,7 +584,7 @@ function handleQuery() {
 }
 /** 重置查询 */
 function handleResetQuery() {
-  queryParams.pageNum = 1,
+    queryParams.pageNum = 1,
     queryParams.pageSize = 10,
     queryParams.studyManagmentType = '',
     queryParams.franchiseName = '',
@@ -588,7 +604,13 @@ function handleResetQuery() {
     queryParams.dateType = '',
     queryParams.startDate = '',
     queryParams.endDate = ''
-
+    queryParams.endDateType = ''
+    queryParams.startDateType = ''
+    queryParams.studyIndication = ''
+    queryParams.technologyPlatform = ''
+    total.value = 0
+    studyList.value = []
+    queryFormRef.value.resetFields();
 }
 
 const hideDropdown = () => {
@@ -641,7 +663,7 @@ const loadOptionsData = async () => {
 };
 
 onMounted(() => {
-  // handleQuery();
+  handleQuery();
 });
 const handleSelect = (item: string) => {
   console.log(item);

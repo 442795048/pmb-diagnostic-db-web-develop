@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div class="w-full" style="font-size: 14px;color: #4a4a4a;">Study Level 1</div>
+    <div class="w-full" style="font-size: 14px;color: #4a4a4a;">Study Level 1 Unique</div>
     <el-form :model="formData" label-position="top" label-width="150" class="filter-form-inline"
       style="margin-top: 10px;" ref="queryFormRef" :rules="rules">
       <el-row :gutter="10">
@@ -371,12 +371,9 @@ onMounted(() => {
 
 });
 watchEffect(() => {
-  if (props.wpCount) {
-    formData.wp = props.wpCount
-  }
-  if (props.cdxCount) {
-    formData.cdx = props.cdxCount
-  }
+  formData.wp = props.wpCount
+  formData.cdx = props.cdxCount
+  
   if(props.hgrSubmissionDate) {
     formData.hgrInitialSubmission = props.hgrSubmissionDate
   }

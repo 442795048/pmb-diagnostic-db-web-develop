@@ -2,48 +2,19 @@
 	<div class="study-line-compare" >
 		<el-card shadow="never">
 			<div class="compare-layout" :class="{ isShowTree }" id="compareStoryLineDomId">
-				<div class="compare-layout-chart common-card">
-					<!-- 标题/操作栏 -->
-					<div class="chart-header">
-						<div class="title" v-html="compareTitle" />
-						<div class="operation">
-							<div class="left-box">
-								<div class="color-box" v-for="item in statusColorArr">
-									<span class="color" :style="{ background: item.color }" />
-									<span class="label">{{ item.label }}</span>
-								</div>
-								<div class="color-box" v-for="item in levelConfig">
-									<span class="color" :style="{ background: item.color }" />
-									<span class="label">{{ item.type }}</span>
-								</div>
-							</div>
-							<div class="right-box">
-								<div class="flex-center">
-									<div class="swtich-text">{{ isActive == 'ALL' ? 'All year' : 'One Year' }}</div>
-									<el-switch v-model="isActive" active-value="ALL" inactive-value="Switch" @change="handleClickMenu"/>
-								</div>
-								<!--全屏 -->
-								<ScreenLayout domId="compareStoryLineDomId" @handleScreenFull="handleScreenFull" />
-							</div>
-						</div>
-					</div>
+				<div class="compare-layout-chart">
 					<!-- 图表 -->
-					<div ref="compareStoryLinList" id="compareStoryLinList" class="chart-content" :style="{ background: isActive == 'ALL' ? '#830051' : '#F4F4F4' }">
-						<StoryLineChart
-							v-for="(chartConfig, index) in chartConfigList"
-							ref="storyLineChartRef"
-							title="StudyA"
-							domId="compareStoryLinList"
-							:isDisabled="disabledStoryLine"
-							:showHeader="false"
-							:isZoomActive="false"
-							:showCarouselButton="index == 0"
-							:chartConfig="chartConfig"
-							@handleScrollLeft="handleScroll"
-							@handleScrollRight="handleScroll"
-						/>
-						<div v-if="showLine" class="marking-line" :style="{ left: `${lineStyle.left}px`, height: `${lineStyle.height}px`}" />
-					</div>
+					<StoryLineChart
+						ref="storyLineChartRef"
+						:title="compareTitle"
+						domId="compareStoryLineDomId"
+						:showMarkLine="showMarkLine"
+						:markLineId="markLineId"
+						:chartList="chartList"
+						:isDisabled="disabledStoryLine"
+						:isZoomActive="false"
+					/>
+					<!-- <div v-if="showLine" class="marking-line" :style="{ left: `${lineStyle.left}px`, height: `${lineStyle.height}px`}" /> -->
 				</div>
 				<div class="story-line-tree" :class="{ 'common-card': isShowTree }">
 					<div class="common-expand-icon">
@@ -75,28 +46,24 @@ import { ref, onMounted, computed } from "vue";
 import { useRoute } from 'vue-router';
 import CompareAPI from "@/api/compare";
 import { sortNameConfig } from '@/views/study/common/line'
+import { getSpecifyMonths } from '@/utils/date'
 import { statusColorArr, levelConfig } from '@/components/StoryLineChart/common'
 import ScreenLayout from '@/components/ScreenLayout.vue'
 const route = useRoute();
 
 const defaultChartList = ref<any>([])
-const chartConfigList = ref<any>([])
-const showLine = ref(false)
-const compareStoryLinList = ref<any>(null)
+const chartList = ref<any>([])
 const compareTitle = ref('')
 const storyLineChartRef: any = ref(null)
 const isFullscreen = ref(false)
-const isActive = ref('ALL')
+const markLineId = ref('')
+const showMarkLine = ref(false)
 const isShowTree = ref<any>(true)
 const selectTreeData = ref<any>([])
 const assaySelectList2 = ref<any>([])
 const assaySelect2 = ref<any>([])
 const assaySelectList3 = ref<any>([])
 const assaySelect3 = ref<any>([])
-const lineStyle = reactive<any>({
-	left: 0,
-	height: 0
-})
 
 onMounted(() => {
 	initChartData()
@@ -107,17 +74,6 @@ const disabledStoryLine = computed(() => {
 	return selectChild.length
 })
 
-/**
- * 全屏展示
- */
-const handleScreenFull = (val: any) => {
-	isFullscreen.value = val
-	// 控制是否显示告警线
-	showLine.value = false
-	setTimeout(() => {
-		getWarningLine()
-	}, 500)
-}
 /**
  * 初始化图表数据
  */
@@ -132,14 +88,44 @@ const initChartData = () => {
 	})
 }
 /**
+ * 更新chart图的显示默认数组
+ */
+const initChartList = (level1Datas: any, createDate: any) => {
+	// 更新chart数据最大时间最小时间
+	const obj = { date: <any>[], list: [] }
+	const PH3ID = level1Datas.find((item: any) => item.name == 'Pre-PH3ID')
+	const NDAA = level1Datas.find((item: any) => item.name == 'NDA-A')
+	const startDate = PH3ID?.startDate
+	const endDate = NDAA?.startDate
+	if (startDate && endDate) {
+		obj.date = [startDate, endDate]
+	} else {
+		if (startDate) {
+		  const date = getSpecifyMonths(startDate, 12).after()
+			obj.date = [startDate, date]
+		} else if (endDate) {
+			const date = getSpecifyMonths(startDate, 12).before()
+			obj.date = [date, startDate]
+		} else {
+			const date = getSpecifyMonths(createDate, 12).before()
+			obj.date = [date, createDate]
+		}
+	}
+	chartList.value.push(obj)
+}
+
+/**
  * 获取全部图的展示数据
  */
 const getCharAllData = (res: any) => {
 	defaultChartList.value = []
 	const list: any = res || []
 	list.forEach((item: any, index: number) => {
-		chartConfigList.value.push([])
-		const { level1Datas, level2Datas, level3Datas, level4Datas, level5Datas, level6Datas  } = item
+		const { level1Datas, level2Datas, level3Datas, level4Datas, level5Datas, level6Datas, createDate} = item
+
+		// 更新chart图的显示默认数组
+		initChartList(level1Datas, createDate)
+
 		const chartData: any = []
 		const chartIndex: number = index
 		// level1
@@ -310,14 +296,14 @@ const updateAssaySelectList = (options: any, data: any) => {
  * 默认展示level1
  */
 const selectChartData = () => {
-	defaultChartList.value.forEach((chartList: any, chartIndex: number) => {
-		chartConfigList.value[chartIndex] = []
-		chartList.forEach((item: any) => {
+	defaultChartList.value.forEach((list: any, chartIndex: number) => {
+		chartList.value[chartIndex].list = []
+		list.forEach((item: any) => {
 			const children: any[] = item.children || []
 			if (item.treeLevel == 1) {
 				const filterChildren = children.filter(f => f.isCheck)
 				const config = { labelName: item.label, horizontal: true, treeLevel: item.treeLevel, chartData: filterChildren }
-				chartConfigList.value[chartIndex].push(config)
+				chartList.value[chartIndex].list.push(config)
 			} else if (item.treeLevel == 2 || item.treeLevel == 3) {
 				// 泳道
 				children.forEach(child => {
@@ -325,13 +311,13 @@ const selectChartData = () => {
 					const filterChildren = assayChildren.filter(f => f.isCheck)
 					if (filterChildren.length) {
 						const config = { labelName: `${item.label}<br/>(${child.label})`, treeLevel: item.treeLevel, chartData: filterChildren }
-						chartConfigList.value[chartIndex].push(config)
+						chartList.value[chartIndex].list.push(config)
 					}
 				})
 			} else {
 				const filterChildren = children.filter(f => f.isCheck)
 				const config = { labelName: item.label, treeLevel: item.treeLevel, chartData: filterChildren }
-				chartConfigList.value[chartIndex].push(config)
+				chartList.value[chartIndex].list.push(config)
 			}
 		})
 	})
@@ -414,86 +400,88 @@ const checkTreeChange = (data?: any) => {
 	})
 	selectChartData()
 	// 控制是否显示告警线
-	showLine.value = false
-	setTimeout(() => {
-		getWarningLine()
-	}, 0)
+	getWarningLine()
 }
 
-/**
- * 切换图表显示类型
- */
-const handleClickMenu = () => {
-	if (Array.isArray(storyLineChartRef.value)) {
-		storyLineChartRef.value.forEach((dom: any) => {
-			dom.handleClickMenu(isActive.value)
-		})
-	}
-	// 控制是否显示告警线
-	showLine.value = false
-	setTimeout(() => {
-		getWarningLine()
-	}, 0)
-}
 /**
  * 获取告警线
  */
 const getWarningLine = () => {
-	const selectChild = selectTreeData.value.filter((fi: any) => fi.isChild)
-	// 每次点击都更新告警线的高度
-	const height = compareStoryLinList.value.scrollHeight
-	lineStyle.height = height
-
-	if (selectChild.length > 1) {
-		// 查找第一个高亮的code
-		const flattenData = getFlattenData()
-		let firstActive = flattenData.find((fi: any) => fi.isActive)
-		console.log(firstActive)
-		// 控制告警线的位置
-		if (firstActive) {
-			const elements: any = document.querySelector(`[dot-code="${firstActive.code}"]`)
-			if (elements) {
-				// const elementLeft = elements.getBoundingClientRect().left
-				const elementLeft = elements.offsetLeft
-				lineStyle.left = elementLeft
-				showLine.value = true
+	showMarkLine.value = false
+	markLineId.value = ''
+	setTimeout(() => {
+		const selectChild = selectTreeData.value.filter((fi: any) => fi.isChild)
+		if (selectChild.length > 1) {
+			// 查找第一个高亮的code
+			const flattenData = getFlattenData()
+			let firstActive = flattenData.find((fi: any) => fi.isActive)
+			// 控制告警线的位置
+			markLineId.value = firstActive?.label
+			if (markLineId.value) {
+				showMarkLine.value = true
 			}
 		}
+	})
+	
+	// 每次点击都更新告警线的高度
+	// const height = compareStoryLinList.value.scrollHeight
+	// lineStyle.height = height
+
+	// if (selectChild.length > 1) {
+	// 	// 查找第一个高亮的code
+	// 	const flattenData = getFlattenData()
+	// 	let firstActive = flattenData.find((fi: any) => fi.isActive)
+	// 	// 控制告警线的位置
+	// 	markLineId.value = firstActive?.label
+	// 	if (markLineId.value) {
+	// 		showMarkLine.value = true
+	// 	}
+		// if (firstActive) {
+		// 	const elements: any = document.querySelector(`[dot-code="${firstActive.code}"]`)
+		// 	if (elements) {
+		// 		// const elementLeft = elements.getBoundingClientRect().left
+		// 		const elementLeft = elements.offsetLeft
+		// 		lineStyle.left = elementLeft
+		// 		showLine.value = true
+		// 	}
+		// }
 
 		// 查找每个study的fristActive
-		chartConfigList.value.forEach((item: any, index: number) => {
-			const domRow = flattenData.find((fi: any) => fi.isActive && fi.chartIndex == index && fi.label == firstActive.label)
-			if (domRow) {
-				const dom: any = document.querySelector(`[dot-code="${domRow.code}"]`)
-				if (dom) {
-					const move = dom.offsetLeft - lineStyle.left
-					storyLineChartRef.value[index].handleScroll(move, true)
-				}
-			}
-		})
-	}
+		// chartList.value.forEach((item: any, index: number) => {
+		// 	const domRow = flattenData.find((fi: any) => fi.isActive && fi.chartIndex == index && fi.label == firstActive.label)
+		// 	if (domRow) {
+		// 		const dom: any = document.querySelector(`[dot-code="${domRow.code}"]`)
+		// 		if (dom) {
+		// 			// const move = dom.offsetLeft - lineStyle.left
+		// 			// storyLineChartRef.value[index].handleScroll(domRow.date)
+		// 		}
+		// 	}
+		// })
+	// }
 }
 
 /**
  * 滚动每个图表的时间轴
  */
-const handleScroll = (move: any) => {
-	showLine.value = false
-	storyLineChartRef.value.forEach((dom: any) => {
-		dom.handleScroll(move)
-	})
-}
+// const handleScroll = (move: any) => {
+// 	showLine.value = false
+// 	storyLineChartRef.value.forEach((dom: any) => {
+// 		console.log(dom)
+// 		dom.handleScroll(move)
+// 	})
+// }
 
 /**
  * 平铺图表显示数据
  */
 const getFlattenData = () => {
 	const result: any = []
-	chartConfigList.value.forEach((chartArr: any) => {
-		chartArr.forEach((chart: any) => {
-			const chartData = chart.chartData || []
-			chartData.forEach((item: any) => {
-				result.push(item)
+	chartList.value.forEach((chat: any) => {
+		const list = chat.list || []
+		list.forEach((item: any) => {
+			const chartData = item.chartData || []
+			chartData.forEach((row: any) => {
+				result.push(row)
 			})
 		})
 	})

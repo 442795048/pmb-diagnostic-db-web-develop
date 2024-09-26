@@ -3,7 +3,7 @@
     <!-- <el-button type="primary" @click="addPanelToFirst">
       新增第一个折叠组件面板
     </el-button> -->
-    <CollapseComponent title="Study Level 2" style="font-size: 14px;color: #4a4a4a;" :panels="panelForms"
+    <CollapseComponent title="Study Level 2 Working Package" style="font-size: 14px;color: #4a4a4a;" :panels="panelForms"
       :active-panels="activePanels" @add-panel="addPanelToFirst" @delete-panel="deletePanelToFirst"
       @update-panel="updatePanel">
       <template #panel-widget="{ item, idx }">
@@ -19,33 +19,33 @@
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Testing Purpose" prop="testingPurpose">
                 <el-select-v2 v-model="item.testingPurpose" placeholder="Please select"
-                  :options="testingPurposeOptions" />
+                  :options="testingPurposeOptions" clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Testing Managment Type" prop="testingManagmentType">
                 <el-select-v2 v-model="item.testingManagmentType" placeholder="Please select"
-                  :options="testingManagmentTypeOptions" />
+                  :options="testingManagmentTypeOptions" clearable />
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="WP Status" prop="wpStatus">
-                <el-select-v2 v-model="item.wpStatus" placeholder="Please select" :options="wpStatusOptions" />
+                <el-select-v2 v-model="item.wpStatus" placeholder="Please select" :options="wpStatusOptions" clearable />
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Biomarker" prop="biomarker">
-                <el-input v-model="item.biomark" placeholder="Please enter" clearable />
+                <el-input v-model="item.biomark" placeholder="Please enter" @input="makeWpId(idx)"  @clear="handleClear(idx)" clearable />
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Testing Lab" prop="testingLab">
-                <el-input v-model="item.testingLab" disabled />
+                <el-input v-model="item.testingLab" disabled clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Assay Name" prop="assayName">
-                <el-input v-model="item.assayName" disabled />
+                <el-input v-model="item.assayName" disabled clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
@@ -56,31 +56,31 @@
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Sample type" prop="sampleType">
-                <el-select-v2 v-model="item.sampleType" placeholder="Please select" :options="sampleTypeOptions"
-                  @change="makeWpId(idx)" />
+                <el-select-v2 v-model="item.sampleType" placeholder="Please select" :options="sampleTypeOptions" clearable
+                  @change="makeWpId(idx)" @clear="handleClear(idx)"/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Technology Group" prop="technologyGroup">
                 <el-select-v2 v-model="item.technologyGroup" placeholder="Please select"
-                  :options="technologyGroupOptions" />
+                  :options="technologyGroupOptions" clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Technology Platform" prop="technologyPlatform">
                 <el-select-v2 v-model="item.technologyPlatform" placeholder="Please select"
-                  :options="technologyPlatformOptions" />
+                  :options="technologyPlatformOptions" clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Test strategy" prop="testStrategy">
-                <el-select-v2 v-model="item.testStrategy" placeholder="Please select" :options="testStrategyOptions" />
+                <el-select-v2 v-model="item.testStrategy" placeholder="Please select" :options="testStrategyOptions" clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
               <el-form-item label="Local IEC Needed" prop="localIecNeeded">
                 <el-select-v2 v-model="item.localIecNeeded" placeholder="Please select"
-                  :options="localIecNeededOptions" />
+                  :options="localIecNeededOptions" clearable/>
               </el-form-item>
             </el-col>
             <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
@@ -353,8 +353,8 @@ const addPanelToFirst = () => {
   panelForms.value.push({});
   // 折叠其他面板
   activePanels.value = "0";
-
-  emits('handleCount', panelForms.value.length)
+  const filteredForms = panelForms.value.filter(form => typeof form.wpId === 'string' && form.wpId != '' && form.wpId != null && form.wpId != undefined);
+  emits('handleCount', filteredForms.length)
   const wpValues: any[] = [];
   for (const key in panelForms.value) {
 
@@ -387,7 +387,12 @@ const deletePanelToFirst = (e: any) => {
 }
 
 const makeWpId = (e: number) => {
-  panelForms.value[e].wpId = 'CTA_' + props.studyName + '_' + panelForms.value[e].biomark + '_' + panelForms.value[e].sampleType
+  if( props.studyName && panelForms.value[e].biomark && panelForms.value[e].sampleType) {
+    panelForms.value[e].wpId = 'CTA_' + props.studyName + '_' + panelForms.value[e].biomark + '_' + panelForms.value[e].sampleType
+  } else {
+    panelForms.value[e].wpId = ''
+  }
+  
   const wpValues: any[] = [];
   for (const key in panelForms.value) {
 
@@ -397,6 +402,23 @@ const makeWpId = (e: number) => {
     }
 
   }
+  const filteredForms = panelForms.value.filter(form => typeof form.wpId === 'string' && form.wpId != '' && form.wpId != null && form.wpId != undefined);
+  emits('handleCount', filteredForms.length)
+  emits('handleWps', wpValues)
+}
+const handleClear = (e: number) => {
+  panelForms.value[e].wpId = ''
+  const wpValues: any[] = [];
+  for (const key in panelForms.value) {
+
+    const form = panelForms.value[key];
+    if (typeof form.wpId === 'string' && form.wpId != '' && form.wpId != null && form.wpId != undefined) {
+      wpValues.push({ label: form.wpId, value: form.wpId });
+    }
+
+  }
+  const filteredForms = panelForms.value.filter(form => typeof form.wpId === 'string' && form.wpId != '' && form.wpId != null && form.wpId != undefined);
+  emits('handleCount', filteredForms.length)
   emits('handleWps', wpValues)
 }
 
