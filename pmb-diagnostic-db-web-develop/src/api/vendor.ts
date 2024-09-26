@@ -1,7 +1,14 @@
 import request from "@/utils/request";
 
-const USER_BASE_URL = "/api/v2/vendor"; // 要改
+const USER_BASE_URL = "/api/v2/vendor";
 
+// 主页List： /api/v2/vendor/page
+
+// summary： /api/v2/vendor/getVendorNumber
+
+// 点击summary后显示List：/api/v2/vendor/pageByStatus
+
+// query中获取studyName的下拉：/api/v2/vendor/getStudyName
 class VendorAPI {
   /**
    * 获取Vendor分页列表
@@ -27,17 +34,6 @@ class VendorAPI {
       method: "get",
     });
   }
-  /**
-   * 获取全部options
-   *
-   */
-  static getAllOptions() {
-    return request<any, any>({
-      url: `${USER_BASE_URL}/getAllOptions`,
-      method: "get",
-    });
-  }
-
   /**
    * 获取全部options
    *
@@ -91,7 +87,7 @@ class VendorAPI {
    *
    * @param data create vendor 表单数据
    */
-  static add(data: any) {
+  static add(data: VendorForm) {
     return request({
       url: `${USER_BASE_URL}/createVendor`,
       method: "post",
@@ -161,7 +157,7 @@ class VendorAPI {
 export default VendorAPI;
 
 /**
- * Vendor查询对象
+ * Vendor分页查询对象
  */
 export interface VendorTableQuery extends PageQuery {
   vendorName: string;
@@ -187,9 +183,9 @@ export interface VendorTableQuery extends PageQuery {
   cdxEndDate: string;
 }
 
-/** Vendor 列表列 */
+/** Vendor分页对象 */
 export interface VendorList {
-  vendorId?: number;
+  vendorId?: string;
   vendorName?: string;
   dxPartnerTierLevel?: string;
   testingLabTierLevel?: string;
@@ -199,14 +195,22 @@ export interface VendorList {
   tddScoring?: string;
   note?: string;
 }
-
-export interface CreateVendorData {}
-
-export interface VendorBasicForm {}
-
-// level 1 接口类型
-
-export interface VendorLevelOneForm {}
-// level 2 接口类型 数组
-
-export interface VendorLevelTwoForm {}
+/** Vendor表单类型 */
+export interface VendorForm {
+  vendorId?: string;
+  vendorName?: string;
+  dxPartner: string;
+  dxPartnerTierLevel?: string;
+  testingLab: string;
+  testingLabTierLevel?: string;
+  assayProvider: string;
+  briefIntroduction: string;
+  assayTestCapability?: string;
+  location?: string;
+  qualification?: string;
+  oddStatus?: string;
+  oddExpireDate?: string;
+  tddStatus?: string;
+  tddExpireDate?: string;
+  notes?: string;
+}

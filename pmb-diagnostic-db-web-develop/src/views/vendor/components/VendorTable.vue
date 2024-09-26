@@ -526,7 +526,7 @@ const hideAssayNameDropdown = () => {
 };
 
 const handleNew = () => {
-  router.push("/study/new");
+  router.push("/vendor/vendor-new");
 };
 const handleSelectionChange = (val: VendorList[]) => {
   multipleSelection.value = val;
@@ -586,13 +586,6 @@ function handleEditClick(studyName: string) {
   });
 }
 
-const loadOptionsData = async () => {
-  VendorAPI.getAllOptions().then((data) => {
-    studyNameOptions.value = data.studyNameOptions;
-    assayNameOptions.value = data.assayNameOptions;
-  });
-};
-
 onMounted(() => {
   // handleQuery();
 });
@@ -601,7 +594,6 @@ const handleSelect = (item: string) => {
 };
 
 onBeforeMount(() => {
-  loadOptionsData();
 });
 
 watchEffect(() => {
