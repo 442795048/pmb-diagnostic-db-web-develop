@@ -9,6 +9,11 @@ const USER_BASE_URL = "/api/v2/vendor";
 // 点击summary后显示List：/api/v2/vendor/pageByStatus
 
 // query中获取studyName的下拉：/api/v2/vendor/getStudyName
+
+// view页面basic info：getVendorById
+// view页面basic info的update：updateVendorById
+// view页面assay：getAssayByVendorId
+// view页面Vendor Visit Detials：getVendorVisitDetail
 class VendorAPI {
   /**
    * 获取Vendor分页列表
@@ -35,7 +40,7 @@ class VendorAPI {
     });
   }
   /**
-   * 获取全部options
+   * 获取vendorList通过summaryType
    *
    */
   static getPageByStatus(queryParams: VendorTableQuery) {
@@ -45,16 +50,15 @@ class VendorAPI {
       params: queryParams,
     });
   }
-
   /**
-   * 获取全部options
+   * 获取studyNameOptions
    *
    */
-  static getAllTeams(VendorName: string) {
-    return request<any, any>({
-      url: `${USER_BASE_URL}/getTeamsInfo`,
+  static getStudyNameList(queryParams: VendorTableQuery) {
+    return request<any, PageResult<VendorList[]>>({
+      url: `${USER_BASE_URL}/getStudyName`,
       method: "get",
-      params: { VendorName },
+      params: queryParams,
     });
   }
 
@@ -62,21 +66,21 @@ class VendorAPI {
    * 获取全部options
    *
    */
-  static getAssayInfo(VendorName: string) {
-    return request<any, any>({
-      url: `${USER_BASE_URL}/getTeamsInfo`,
-      method: "get",
-      params: { VendorName },
-    });
-  }
+  // static getAllTeams(VendorName: string) {
+  //   return request<any, any>({
+  //     url: `${USER_BASE_URL}/getTeamsInfo`,
+  //     method: "get",
+  //     params: { VendorName },
+  //   });
+  // }
 
   /**
    * 获取全部options
    *
    */
-  static getAssayById(queryParams: any) {
+  static getAssayByVendorId(queryParams: any) {
     return request<any, any>({
-      url: `${USER_BASE_URL}/getAssayById`,
+      url: `${USER_BASE_URL}/getAssayByVendorId`,
       method: "get",
       params: queryParams,
     });

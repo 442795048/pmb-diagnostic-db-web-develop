@@ -14,10 +14,13 @@
       <!-- Assay Short List-->
       <div class="template-btn">
         <h3 class="common-title">Study Story Line:</h3>
-        dddd
+        <AssayShortList />
       </div>
       <!--Vendor Operation Evaluation -->
-      <div>eee</div>
+      <div class="template-btn">
+        <h3 class="common-title">Vendor Operation Evaluation:</h3>
+        <VendorOperationEvaluation />
+      </div>
       <!-- Lab Visit  Issue -->
       <div class="bottom">
         <!-- <TeamBoard /> -->
@@ -36,7 +39,9 @@ import { onMounted, onBeforeMount, cumputed } from "vue";
 import VendorAPI, { VendorForm, VendorList } from "@/api/vendor";
 import DictAPI, { DictItem } from "@/api/dict";
 import BasicInformation from "./BasicInformation.vue";
-import { useRoute } from 'vue-router';
+import AssayShortList from "./AssayShortList.vue";
+import VendorOperationEvaluation from "./VendorOperationEvaluation.vue";
+import { useRoute } from "vue-router";
 const route = useRoute();
 const vendorId = computed(() => {
   return route.query.vendorId;
@@ -54,5 +59,6 @@ onMounted(() => {});
   &.showSubmit {
     padding-bottom: 58px;
   }
+  
 }
 </style>

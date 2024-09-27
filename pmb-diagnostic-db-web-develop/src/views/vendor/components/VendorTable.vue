@@ -32,18 +32,20 @@
             label="Assay/Test capability"
             prop="assayTestCapability"
           >
-            <el-input
+            <el-select-v2
               v-model="queryParams.assayTestCapability"
-              placeholder="Please enter"
+              placeholder="Please select"
+              :options="assayTestCapabilityOptions"
               clearable
             />
           </el-form-item>
         </el-col>
         <el-col :xs="4" :sm="6" :md="6" :lg="6" :xl="6">
           <el-form-item label="Qualification">
-            <el-input
+            <el-select-v2
               v-model="queryParams.qualification"
-              placeholder="Please enter"
+              placeholder="Please select"
+              :options="qualificationOptions"
               clearable
             />
           </el-form-item>
@@ -53,7 +55,7 @@
             <el-select-v2
               v-model="queryParams.oddStatus"
               placeholder="Please select"
-              :options="ddStatusOptions"
+              :options="oddStatusOptions"
               clearable
             />
           </el-form-item>
@@ -63,7 +65,7 @@
             <el-select-v2
               v-model="queryParams.tddStatus"
               placeholder="Please select"
-              :options="ddStatusOptions"
+              :options="tddStatusOptions"
               clearable
             />
           </el-form-item>
@@ -81,9 +83,9 @@
               <li
                 v-for="(option, index) in filteredStudyOptions"
                 :key="index"
-                @click="selectStudyOption(option)"
+                @click="selectStudyOption(option.value)"
               >
-                {{ option }}
+                {{ option.value }}
               </li>
             </ul>
           </el-form-item>
@@ -457,15 +459,19 @@ const queryParams = reactive<VendorTableQuery>({
 
 // vendor 表格数据
 const vendorList = ref<VendorList[]>();
+const dxPartnerOptions = ref<OptionType[]>([]);
+const tierLevelOptions = ref<OptionType[]>([]);
+const testingLabOptions = ref<OptionType[]>([]);
+const assayTestCapabilityOptions = ref<OptionType[]>([]);
+const assayProviderOptions = ref<OptionType[]>([]);
+const qualificationOptions = ref<OptionType[]>([]);
+const oddStatusOptions = ref<OptionType[]>([]);
+const tddStatusOptions = ref<OptionType[]>([]);
 
 const vendorTypeOptions = ref<OptionType[]>([
   { value: "DxParnter", label: "Dx parnter" },
   { value: "TestingLab", label: "TestingLab" },
   { value: "assayProvider", label: "assayProvider" },
-]);
-const ddStatusOptions = ref<OptionType[]>([
-  { value: "Status1", label: "Status1" },
-  { value: "Status2", label: "Status2" },
 ]);
 const ctaByStudyNameOptions = ref<OptionType[]>([
   { value: "cta", label: "Tissue" },
@@ -480,7 +486,7 @@ const assayNameOptions = ref([]);
 const showStudyDropdown = ref(false);
 const showAssayNameDropdown = ref(false);
 const filteredStudyOptions = ref<string[]>([]);
-
+//studyName
 const filterStudyOptions = (event: string) => {
   if (studyNameOptions.value.length > 0) {
     const value = event;
@@ -490,7 +496,7 @@ const filterStudyOptions = (event: string) => {
       return;
     }
     filteredStudyOptions.value = studyNameOptions.value.filter((option) =>
-      option?.toLowerCase().includes(value.toLowerCase())
+      option.value.toLowerCase().includes(value.toLowerCase())
     );
     showStudyDropdown.value = true;
   }
@@ -589,13 +595,41 @@ function handleEditClick(vendorName: string) {
 }
 
 onMounted(() => {
-  // handleQuery();
+  handleQuery();
 });
 const handleSelect = (item: string) => {
   console.log(item);
 };
 
-onBeforeMount(() => {});
+onBeforeMount(() => {
+  DictAPI.getOptions("dxPartner").then((data) => {
+    dxPartnerOptions.value = data;
+  });
+  DictAPI.getOptions("tierLevel").then((data) => {
+    tierLevelOptions.value = data;
+  });
+  DictAPI.getOptions("testingLab").then((data) => {
+    testingLabOptions.value = data;
+  });
+  DictAPI.getOptions("assayProvider").then((data) => {
+    assayProviderOptions.value = data;
+  });
+  DictAPI.getOptions("assayTestCapability").then((data) => {
+    assayTestCapabilityOptions.value = data;
+  });
+  DictAPI.getOptions("qualification").then((data) => {
+    qualificationOptions.value = data;
+  });
+  DictAPI.getOptions("oddStatus").then((data) => {
+    oddStatusOptions.value = data;
+  });
+  DictAPI.getOptions("tddStatus").then((data) => {
+    tddStatusOptions.value = data;
+  });
+  VendorAPI.getStudyNameList({}).then((data) => {
+    studyNameOptions.value = data;
+  });
+});
 
 watchEffect(() => {
   if (props.vendors) {

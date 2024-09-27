@@ -129,8 +129,8 @@
           {{ isExpand ? "Less" : "More" }}
         </div> -->
       </div>
+      <template #footer>Footer content</template>
     </el-card>
-    <el-card></el-card>
   </el-form>
   <div v-if="showSubmit" class="footer-btn">
     <el-button @click="SubmitStudy">Submit</el-button>
@@ -157,7 +157,7 @@ const refreshAppMain: any = inject("refreshAppMain");
 const showSubmit = ref<Boolean>(false);
 const isEditMode = ref<Boolean>(false);
 const isExpand = ref<Boolean>(false);
-  const dxPartnerOptions = ref<OptionType[]>([]);
+const dxPartnerOptions = ref<OptionType[]>([]);
 const tierLevelOptions = ref<OptionType[]>([]);
 const testingLabOptions = ref<OptionType[]>([]);
 const assayTestCapabilityOptions = ref<OptionType[]>([]);
@@ -263,12 +263,8 @@ const handleMore = () => {
   width: calc(100% - 210px);
   z-index: 999;
 }
-.isMore {
-  cursor: pointer;
-  color: #20a6fc;
-  font-size: 12px;
-  position: absolute;
-  right: 0;
-  bottom: 15px;
+
+.card-header {
+  font-size: 14px;
 }
 </style>
